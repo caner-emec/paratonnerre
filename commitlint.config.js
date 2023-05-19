@@ -1,4 +1,1 @@
-module.exports = {
-  extends: ['@commitlint/config-conventional'],
-  ignores: [message => message.includes('WIP')],
-};
+module.exports = {extends: ['@commitlint/config-conventional']};
