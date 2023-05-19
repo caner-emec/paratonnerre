@@ -1,0 +1,28 @@
+version: '3.'
+
+networks:
+  test-network:
+    external:
+      name: test-network
+
+services:
+  paratonnerre:
+    container_name: paratonnerre
+    image: caner-emec/paratonnerre:latest
+    restart: always
+    ports:
+      - 5000:5000
+    volumes:
+      - ./:/app
+    environment:
+      - CHANNEL_NAME=mychannel
+      - CHAINCODE_NAME=basic
+      - PEER_NAME=peer0.org1.example.com
+      - MSP_ID=Org1MSP
+      - PEER_ENDPOINT=localhost:7051
+      - PEER_HOST_ALIAS=peer0.org1.example.com
+      - CRED_USER_CERT_PATH=../src/credentials/cert.pem
+      - CRED_USER_PRIVKEY_PATH=../src/credentials/priv_sk
+      - CRED_PEER_TLS_CERT_PATH=../src/credentials/ca.crt
+    networks:
+      - test-network
