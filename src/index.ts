@@ -21,7 +21,7 @@ import {
   p_getBlockMetadata,
   p_getPayloadHeader,
   p_getPayloadData,
-} from './lib/blockParser';
+} from './lib/parser/blockParser';
 
 //
 let client: grpc.Client | undefined;

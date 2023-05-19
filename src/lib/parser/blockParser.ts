@@ -1,14 +1,14 @@
-import {Identity} from '@hyperledger/fabric-gateway';
 import {common, ledger, msp, peer} from '@hyperledger/fabric-protos';
-import {checkUndefined, toHexString} from '../utils/utils';
+import {checkUndefined, toHexString} from '../../utils/utils';
 import {
   ProcessedBlockHeader,
   ProcessedSignatureHeader,
   ProcessedBlockMetadataSignature,
   ProcessedHeaderTypeEnum,
-  ProcessedId,
-} from '../types/default.types';
+} from '../../types/default.types';
 import {Buffer} from 'node:buffer';
+import {p_DeserializeIdentity} from './parserUtils';
+import {p_getPayloadData} from './payloadDataParser';
 
 //
 function p_getBlockHeader(
@@ -142,70 +142,6 @@ function p_getPayloadHeader(payload: common.Payload): object {
   };
 }
 
-function p_getPayloadData(payload: common.Payload): object {
-  const payloadHeader = checkUndefined(
-    payload.getHeader(),
-    'Payload header not found!'
-  );
-  const channelHeader = common.ChannelHeader.deserializeBinary(
-    payloadHeader.getChannelHeader_asU8()
-  );
-
-  if (channelHeader.getType() !== common.HeaderType.ENDORSER_TRANSACTION) {
-    // throw new Error('This is not endorser transaction!');
-    return {};
-  }
-
-  const actions: object[] = [];
-  const tx = peer.Transaction.deserializeBinary(payload.getData_asU8());
-  tx.getActionsList().forEach(action => {
-    const chaincodeActionPayload =
-      peer.ChaincodeActionPayload.deserializeBinary(action.getPayload_asU8());
-    if (chaincodeActionPayload.hasAction()) {
-      const action = checkUndefined(
-        chaincodeActionPayload.getAction(),
-        'Action is undefined!'
-      );
-      const endorsers = p_getEndorsments(action, 'Base64');
-      actions.push({endorsers: endorsers});
-    }
-  });
-
-  return {
-    actions: actions,
-  };
-}
-
-function p_getEndorsments(
-  action: peer.ChaincodeEndorsedAction,
-  format: 'byteArray' | 'Base64' | 'hexString'
-): object[] {
-  const endorsers: object[] = [];
-  action.getEndorsementsList().forEach(endorsment => {
-    const endorser = msp.SerializedIdentity.deserializeBinary(
-      endorsment.getEndorser_asU8()
-    );
-    endorsers.push(p_DeserializeIdentity(endorser, 'Base64'));
-  });
-  return endorsers;
-}
-
-function p_DeserializeIdentity(
-  id: msp.SerializedIdentity,
-  format: 'byteArray' | 'Base64' | 'hexString'
-): ProcessedId {
-  const idFormatted =
-    format === 'byteArray'
-      ? id.getIdBytes_asU8()
-      : format === 'Base64'
-      ? id.getIdBytes_asB64()
-      : toHexString(id.getIdBytes_asU8());
-
-  return {
-    mspId: id.getMspid(),
-    id: idFormatted,
-  };
-}
 ///////////////////////////////////
 function getTransactionValidationCodes(block: common.Block): Uint8Array {
   const metadata = checkUndefined(
