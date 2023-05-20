@@ -29,14 +29,6 @@ let grpcConnectionOptions: ConnectOptions | undefined;
 let gateway: Gateway | undefined;
 let blocks: CloseableAsyncIterable<Block> | undefined;
 
-// move to utils ..
-function toHexString(byteArray: Uint8Array | undefined) {
-  if (byteArray === undefined) return;
-  return Array.from(byteArray, byte => {
-    return ('0' + (byte & 0xff).toString(16)).slice(-2);
-  }).join('');
-}
-
 async function main(): Promise<void> {
   client = await newGrpcConnection();
   grpcConnectionOptions = await newConnectOptions(client);
@@ -64,15 +56,10 @@ async function main(): Promise<void> {
   });
 
   for await (const blockProto of blocks) {
-    console.log('\n1');
-    console.log('Block Metadata: ', p_getBlockMetadata(blockProto, 'Base64'));
+    console.log(
+      '\n\n*******************************************************\n\n'
+    );
 
-    console.log('\n2');
-    console.log('Block Header: ', p_getBlockHeader(blockProto, 'hexString'));
-    // console.log(getBlockHeader(blockProto, 'Base64'));
-    // console.log(getBlockHeader(blockProto, 'byteArray'));
-
-    console.log('\n3');
     const blockData = checkUndefined(
       blockProto.getData(),
       'Block not contain any data!'
@@ -82,11 +69,25 @@ async function main(): Promise<void> {
       .getDataList_asU8()
       .map(dataBytes => common.Envelope.deserializeBinary(dataBytes));
 
+    const blockPayloads: object[] = [];
     blockDataDeserialized.forEach(bData => {
       const payload = common.Payload.deserializeBinary(bData.getPayload_asU8());
-      console.log('Payload Header: ', p_getPayloadHeader(payload));
-      console.log(p_getPayloadData(payload));
+
+      blockPayloads.push({
+        payloadHeader: p_getPayloadHeader(payload),
+        payloadData: p_getPayloadData(payload),
+      });
     });
+
+    const total = {
+      block: {
+        metadata: p_getBlockMetadata(blockProto, 'Base64'),
+        header: p_getBlockHeader(blockProto, 'hexString'),
+        data: blockPayloads,
+      },
+    };
+    console.log(JSON.stringify(total, null, 2));
+
     // console.log(blockProto.getData()?.getDataList_asB64());
   }
 

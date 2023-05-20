@@ -1,6 +1,12 @@
 import {common, ledger, msp, peer} from '@hyperledger/fabric-protos';
 import {checkUndefined, toHexString} from '../../utils/utils';
-import {ProcessedSignatureHeader, ProcessedId} from '../../types/default.types';
+import {
+  ProcessedChaincodeEventInfo,
+  ProcessedChaincodeInfo,
+  ProcessedId,
+} from '../../types/default.types';
+
+import {ProcessedKVWriteEntry} from '../../types/rwset.types';
 import {p_DeserializeIdentity} from './parserUtils';
 
 function p_getPayloadData(payload: common.Payload): object {
@@ -36,22 +42,11 @@ function p_getPayloadData(payload: common.Payload): object {
           action.getProposalResponsePayload_asU8()
         );
 
-      console.log(
-        'Proposal Hash: ',
-        toHexString(proposalRespPayload.getProposalHash_asU8())
-      );
-
       const ccAction = peer.ChaincodeAction.deserializeBinary(
         proposalRespPayload.getExtension_asU8()
       );
 
-      console.log(
-        'Event::: ',
-        peer.ChaincodeEvent.deserializeBinary(
-          ccAction.getEvents_asU8()
-        ).getEventName()
-      );
-      p_getChaincodeEventInfo(ccAction);
+      console.log('KV RW Set: ', p_getKVRWSet(ccAction));
 
       actions.push({
         endorsers: endorsers,
@@ -59,6 +54,8 @@ function p_getPayloadData(payload: common.Payload): object {
           proposalHash: toHexString(proposalRespPayload.getProposalHash_asU8()),
         },
         chaincodeInfo: p_getChaincodeInfo(proposalRespPayload),
+        chaincodeEvents: p_getChaincodeEventInfo(ccAction),
+        kvReadWriteSet: p_getKVRWSet(ccAction),
       });
     }
   });
@@ -70,20 +67,82 @@ function p_getPayloadData(payload: common.Payload): object {
   };
 }
 
+function p_getKVRWSet(ccAction: peer.ChaincodeAction): ProcessedKVWriteEntry[] {
+  const txRWSet = ledger.rwset.TxReadWriteSet.deserializeBinary(
+    ccAction.getResults_asU8()
+  );
+
+  const kvRWSet: ProcessedKVWriteEntry[] = [];
+  if (txRWSet.getDataModel() === ledger.rwset.TxReadWriteSet.DataModel.KV) {
+    txRWSet.getNsRwsetList().forEach(nsRW => {
+      const kvWset = ledger.rwset.kvrwset.KVRWSet.deserializeBinary(
+        nsRW.getRwset_asU8()
+      ).getWritesList();
+
+      // return p_getKVWriteList(kvWset);
+
+      kvWset.forEach(kv => {
+        kvRWSet.push({
+          key: kv.getKey(),
+          value: {
+            asByte: kv.getValue_asU8(),
+            asBase64: kv.getValue_asB64(),
+            asString: String.fromCharCode(...kv.getValue_asU8()),
+          },
+          isDeleted: kv.getIsDelete(),
+        });
+      });
+      //
+    });
+  }
+
+  return kvRWSet;
+}
+
+function p_getNamespaceRWSet(nsRWSet: ledger.rwset.NsReadWriteSet): object {
+  const rwSet = ledger.rwset.kvrwset.KVRWSet.deserializeBinary(
+    nsRWSet.getRwset_asU8()
+  );
+  rwSet.getWritesList();
+  return {};
+}
+
+function p_getKVWriteList(
+  kvwrite: ledger.rwset.kvrwset.KVWrite[]
+): ProcessedKVWriteEntry[] {
+  const ret: ProcessedKVWriteEntry[] = [];
+  kvwrite.forEach(kv => {
+    ret.push({
+      key: kv.getKey(),
+      value: {
+        asByte: kv.getValue_asU8(),
+        asBase64: kv.getValue_asB64(),
+        asString: String.fromCharCode(...kv.getValue_asU8()),
+      },
+      isDeleted: kv.getIsDelete(),
+    });
+  });
+
+  return ret;
+}
+
 function p_getChaincodeEventInfo(
   chaincodeAction: peer.ChaincodeAction
-): object {
+): ProcessedChaincodeEventInfo {
   const ccEvent = peer.ChaincodeEvent.deserializeBinary(
     chaincodeAction.getEvents_asU8()
   );
 
-  console.log('CC Ev JSON', ccEvent.getTxId());
   return {
     eventName: ccEvent.getEventName(),
+    eventPayload: String.fromCharCode(...ccEvent.getPayload_asU8()),
+    eventTxId: ccEvent.getTxId(),
   };
 }
 
-function p_getChaincodeInfo(proposalRP: peer.ProposalResponsePayload): object {
+function p_getChaincodeInfo(
+  proposalRP: peer.ProposalResponsePayload
+): ProcessedChaincodeInfo {
   const ccAction = peer.ChaincodeAction.deserializeBinary(
     proposalRP.getExtension_asU8()
   );
@@ -97,8 +156,8 @@ function p_getChaincodeInfo(proposalRP: peer.ProposalResponsePayload): object {
 function p_getEndorsments(
   action: peer.ChaincodeEndorsedAction,
   format: 'byteArray' | 'Base64' | 'hexString'
-): object[] {
-  const endorsers: object[] = [];
+): ProcessedId[] {
+  const endorsers: ProcessedId[] = [];
   action.getEndorsementsList().forEach(endorsment => {
     const endorser = msp.SerializedIdentity.deserializeBinary(
       endorsment.getEndorser_asU8()

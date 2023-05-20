@@ -30,6 +30,18 @@ type ProcessedSignatureHeader = {
   nonce: Number;
 };
 
+type ProcessedChaincodeEventInfo = {
+  eventName: string;
+  eventPayload: string;
+  eventTxId: string;
+};
+
+type ProcessedChaincodeInfo = {
+  chaincodeName: string | undefined;
+  chaincodePath: string | undefined;
+  chaincodeVersion: string | undefined;
+};
+
 enum ProcessedHeaderTypeEnum {
   MESSAGE = 0, // Used for messages which are signed but opaque
   CONFIG = 1, // Used for messages which express the channel config
@@ -48,4 +60,6 @@ export {
   ProcessedBlockMetadataSignature,
   ProcessedHeaderTypeEnum,
   ProcessedId,
+  ProcessedChaincodeEventInfo,
+  ProcessedChaincodeInfo,
 };

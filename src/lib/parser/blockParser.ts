@@ -9,8 +9,98 @@ import {
 import {Buffer} from 'node:buffer';
 import {p_DeserializeIdentity} from './parserUtils';
 import {p_getPayloadData} from './payloadDataParser';
+import {
+  ProcessedEnvelope,
+  ProcessedPayload,
+  ProcessedPayloadHeader,
+} from '../../types/block.types';
 
-//
+function p_constructBlock(block: common.Block): object {
+  const blockData = checkUndefined(
+    block.getData(),
+    'Block not contain any data!'
+  );
+
+  const processedEnvelopes = blockData
+    .getDataList_asU8()
+    .map(dataBytes => common.Envelope.deserializeBinary(dataBytes))
+    .map(envelope => p_getEnvelope(envelope));
+
+  return {
+    block: {
+      metadata: p_getBlockMetadata(block, 'Base64'),
+      header: p_getBlockHeader(block, 'hexString'),
+      data: processedEnvelopes,
+    },
+  };
+}
+
+function p_getEnvelope(envelope: common.Envelope): ProcessedEnvelope {
+  return {
+    signature: toHexString(envelope.getSignature_asU8()),
+    payload: p_getPayload(
+      common.Payload.deserializeBinary(envelope.getPayload_asU8())
+    ),
+  };
+}
+
+function p_getPayload(payload: common.Payload): ProcessedPayload {
+  return {
+    header: p_getPayloadHeader(payload),
+    data: p_getPayloadData(payload),
+  };
+}
+
+function p_getSignatureHeader(
+  signatureHeader: common.SignatureHeader,
+  format: 'byteArray' | 'Base64' | 'hexString'
+): ProcessedSignatureHeader {
+  const deserializedIdentity = msp.SerializedIdentity.deserializeBinary(
+    signatureHeader.getCreator_asU8()
+  );
+
+  const id = p_DeserializeIdentity(deserializedIdentity, format);
+
+  return {
+    creator: id,
+    nonce: Number(
+      Buffer.from(signatureHeader.getNonce_asU8()).readBigInt64LE()
+    ),
+  };
+}
+
+function p_getPayloadHeader(payload: common.Payload): ProcessedPayloadHeader {
+  const payloadHeader = checkUndefined(
+    payload.getHeader(),
+    'Payload header not found!'
+  );
+  const channelHeader = common.ChannelHeader.deserializeBinary(
+    payloadHeader.getChannelHeader_asU8()
+  );
+
+  return {
+    header: {
+      channelHeader: {
+        type: ProcessedHeaderTypeEnum[channelHeader.getType()], // Header types 0-10000 are reserved and defined by HeaderType
+        version: channelHeader.getVersion(), // Version indicates message protocol version
+        timestamp: channelHeader.getTimestamp()?.toDate(),
+        channelId: channelHeader.getChannelId(),
+        txId: channelHeader.getTxId(),
+        epoch: channelHeader.getEpoch(),
+        tlsCertHash: toHexString(channelHeader.getTlsCertHash_asU8()),
+      },
+      signatureHeader: p_getSignatureHeader(
+        common.SignatureHeader.deserializeBinary(
+          payloadHeader.getSignatureHeader_asU8()
+        ),
+        'Base64'
+      ),
+    },
+  };
+}
+
+///////////////////////////77
+///////////////////////////7
 function p_getBlockHeader(
   block: common.Block,
   format: 'byteArray' | 'Base64' | 'hexString'
@@ -34,24 +124,6 @@ function p_getBlockHeader(
     number: header.getNumber(),
     previousHash: prevHash,
     dataHash: dataHash,
-  };
-}
-
-function p_getSignatureHeader(
-  signatureHeader: common.SignatureHeader,
-  format: 'byteArray' | 'Base64' | 'hexString'
-): ProcessedSignatureHeader {
-  const deserializedIdentity = msp.SerializedIdentity.deserializeBinary(
-    signatureHeader.getCreator_asU8()
-  );
-
-  const id = p_DeserializeIdentity(deserializedIdentity, format);
-
-  return {
-    creator: id,
-    nonce: Number(
-      Buffer.from(signatureHeader.getNonce_asU8()).readBigInt64LE()
-    ),
   };
 }
 
@@ -109,36 +181,6 @@ function p_getBlockMetadata(
     metadataCommitHash: toHexString(
       metadata.getMetadataList_asU8()[common.BlockMetadataIndex.COMMIT_HASH]
     ),
-  };
-}
-
-function p_getPayloadHeader(payload: common.Payload): object {
-  const payloadHeader = checkUndefined(
-    payload.getHeader(),
-    'Payload header not found!'
-  );
-  const channelHeader = common.ChannelHeader.deserializeBinary(
-    payloadHeader.getChannelHeader_asU8()
-  );
-
-  return {
-    header: {
-      channelHeader: {
-        type: ProcessedHeaderTypeEnum[channelHeader.getType()], // Header types 0-10000 are reserved and defined by HeaderType
-        version: channelHeader.getVersion(), // Version indicates message protocol version
-        timestamp: channelHeader.getTimestamp()?.toDate(),
-        channelId: channelHeader.getChannelId(),
-        txId: channelHeader.getTxId(),
-        epoch: channelHeader.getEpoch(),
-        tlsCertHash: toHexString(channelHeader.getTlsCertHash_asU8()),
-      },
-      signatureHeader: p_getSignatureHeader(
-        common.SignatureHeader.deserializeBinary(
-          payloadHeader.getSignatureHeader_asU8()
-        ),
-        'Base64'
-      ),
-    },
   };
 }
 
