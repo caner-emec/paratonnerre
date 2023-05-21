@@ -21,6 +21,7 @@ import {
   p_getBlockMetadata,
   p_getPayloadHeader,
   p_getPayloadData,
+  p_constructBlock,
 } from './lib/parser/blockParser';
 
 //
@@ -59,7 +60,7 @@ async function main(): Promise<void> {
     console.log(
       '\n\n*******************************************************\n\n'
     );
-
+    /*
     const blockData = checkUndefined(
       blockProto.getData(),
       'Block not contain any data!'
@@ -77,15 +78,16 @@ async function main(): Promise<void> {
         payloadHeader: p_getPayloadHeader(payload),
         payloadData: p_getPayloadData(payload),
       });
-    });
+    });*/
+    const total = p_constructBlock(blockProto);
 
-    const total = {
+    /*const total = {
       block: {
         metadata: p_getBlockMetadata(blockProto, 'Base64'),
         header: p_getBlockHeader(blockProto, 'hexString'),
         data: blockPayloads,
       },
-    };
+    };*/
     console.log(JSON.stringify(total, null, 2));
 
     // console.log(blockProto.getData()?.getDataList_asB64());

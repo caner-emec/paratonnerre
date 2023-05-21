@@ -52,6 +52,14 @@ enum ProcessedHeaderTypeEnum {
   CHAINCODE_PACKAGE = 6,
 }
 
+enum ChaincodeSpecType {
+  UNDEFINED = 0,
+  GOLANG = 1,
+  NODE = 2,
+  CAR = 3,
+  JAVA = 4,
+}
+
 export {
   HLFCredentialsPaths,
   Identity,
@@ -62,4 +70,5 @@ export {
   ProcessedId,
   ProcessedChaincodeEventInfo,
   ProcessedChaincodeInfo,
+  ChaincodeSpecType,
 };

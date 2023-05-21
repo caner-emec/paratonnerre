@@ -8,7 +8,7 @@ import {
 } from '../../types/default.types';
 import {Buffer} from 'node:buffer';
 import {p_DeserializeIdentity} from './parserUtils';
-import {p_getPayloadData} from './payloadDataParser';
+import {p_getPayloadData} from './payloadDataParser2';
 import {
   ProcessedEnvelope,
   ProcessedPayload,
@@ -45,9 +45,15 @@ function p_getEnvelope(envelope: common.Envelope): ProcessedEnvelope {
 }
 
 function p_getPayload(payload: common.Payload): ProcessedPayload {
+  const typeTx = common.ChannelHeader.deserializeBinary(
+    checkUndefined(
+      payload.getHeader(),
+      'There is no header!'
+    ).getChannelHeader_asU8()
+  ).getType();
   return {
     header: p_getPayloadHeader(payload),
-    data: p_getPayloadData(payload),
+    data: p_getPayloadData(payload, typeTx),
   };
 }
 
@@ -234,4 +240,5 @@ export {
   p_getBlockMetadata,
   p_getPayloadHeader,
   p_getPayloadData,
+  p_constructBlock,
 };
