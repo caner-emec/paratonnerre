@@ -1,0 +1,301 @@
+{
+  "block": {
+    "metadata": {
+      "value": "CgIIAhIJCgcKAQEQAhgP",
+      "numOfSignatures": 1,
+      "signatures": [
+        {
+          "signatureHeader": {
+            "creator": {
+              "mspId": "OrdererMSP",
+              "id": "LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCk1JSUNwakNDQWt5Z0F3SUJBZ0lVZTZHbjhUOVY0ZFRVdzRkSzdZb2oxZ0laN2VRd0NnWUlLb1pJemowRUF3SXcKWWpFTE1Ba0dBMVVFQmhNQ1ZWTXhFVEFQQmdOVkJBZ1RDRTVsZHlCWmIzSnJNUkV3RHdZRFZRUUhFd2hPWlhjZwpXVzl5YXpFVU1CSUdBMVVFQ2hNTFpYaGhiWEJzWlM1amIyMHhGekFWQmdOVkJBTVREbU5oTG1WNFlXMXdiR1V1ClkyOXRNQjRYRFRJek1EVXhPVEV4TlRVd01Gb1hEVEkwTURVeE9ERXlNREF3TUZvd1lERUxNQWtHQTFVRUJoTUMKVlZNeEZ6QVZCZ05WQkFnVERrNXZjblJvSUVOaGNtOXNhVzVoTVJRd0VnWURWUVFLRXd0SWVYQmxjbXhsWkdkbApjakVRTUE0R0ExVUVDeE1IYjNKa1pYSmxjakVRTUE0R0ExVUVBeE1IYjNKa1pYSmxjakJaTUJNR0J5cUdTTTQ5CkFnRUdDQ3FHU000OUF3RUhBMElBQkM5NUU2Nkk4cG9ZblU2QmdnZ2pCcDUvbEx3Y1hkRnFaMCt4TmJWTDJLUk4KT1I4d2VnQWVjUGp6UVRxUHZIREY3T0lqRE5LQTdpVnpqOS9wdTRXTlNmbWpnZUV3Z2Q0d0RnWURWUjBQQVFILwpCQVFEQWdlQU1Bd0dBMVVkRXdFQi93UUNNQUF3SFFZRFZSME9CQllFRkFGOFhtOXdJeHpNYzBpSUdTYVQ3WlQxClJ2WFlNQjhHQTFVZEl3UVlNQmFBRkhySnl6Qm11RURXeWw0R2dWM0JMeUdMa1h5Wk1DRUdBMVVkRVFRYU1CaUMKRm1WNGFXMXBiM1Z6TWkxSVZVMUJMVWcwTFZZMExURXdXd1lJS2dNRUJRWUhDQUVFVDNzaVlYUjBjbk1pT25zaQphR1l1UVdabWFXeHBZWFJwYjI0aU9pSWlMQ0pvWmk1RmJuSnZiR3h0Wlc1MFNVUWlPaUp2Y21SbGNtVnlJaXdpCmFHWXVWSGx3WlNJNkltOXlaR1Z5WlhJaWZYMHdDZ1lJS29aSXpqMEVBd0lEU0FBd1JRSWhBUDc4SlJ2czNFV2EKUFBxTkZTS2laQnhNbzBhRDBRc3dhVFVkZHpkYWdONUpBaUFZeXV2WGdHbXQ2WGxjSm1nbWZwMW95TElHZmV0VwpVYjJ2QUljb0hmcCtmdz09Ci0tLS0tRU5EIENFUlRJRklDQVRFLS0tLS0K"
+            },
+            "nonce": -8296977502709071000
+          },
+          "signature": "MEUCIQDzK+lvZqdow1i6ufvpf/zxkmlWktkYbFF7QngOlHBG5QIgeOIH/hMEsYlEbKDxTkfjCfslyXZgiiMJQR4GLb+Hb5s="
+        }
+      ],
+      "metadataCommitHash": "0a2033573ee5ecbdecac9efdd6cf3b9ddd9319263f841f353ba7bc0d23faeb212ca4"
+    },
+    "header": {
+      "number": 13,
+      "previousHash": "c581203f46f83be1e0b4b0e888dd334dfee04f6501dfd99be7f43c29012e9175",
+      "dataHash": "892fce7fecaf8f99b5b8bb16e202f144bbe7d206f87474e34acc7530c984809a"
+    },
+    "data": [
+      {
+        "signature": "3045022100d5cedcc985c70ae7b4f94237a33f50c9553b3c2db0d2b53bcd01c5c36db8cf4e0220767df37d8b9456319d332e16a7659a3cc1b52d00fa83b1acc9e1572a17d535a6",
+        "payload": {
+          "header": {
+            "header": {
+              "channelHeader": {
+                "type": "ENDORSER_TRANSACTION",
+                "version": 0,
+                "timestamp": "2023-05-19T21:50:40.309Z",
+                "channelId": "mychannel",
+                "txId": "ef74d2f63c8441388f68b2fa0ecf0c5801be419acd226c64b605e81f08588b42",
+                "epoch": 0,
+                "tlsCertHash": ""
+              },
+              "signatureHeader": {
+                "creator": {
+                  "mspId": "Org1MSP",
+                  "id": "LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCk1JSUNyakNDQWxTZ0F3SUJBZ0lVVmxFZlJVZmhvdk0vUkpMTk9vblBDK2g4Yk93d0NnWUlLb1pJemowRUF3SXcKY0RFTE1Ba0dBMVVFQmhNQ1ZWTXhGekFWQmdOVkJBZ1REazV2Y25Sb0lFTmhjbTlzYVc1aE1ROHdEUVlEVlFRSApFd1pFZFhKb1lXMHhHVEFYQmdOVkJBb1RFRzl5WnpFdVpYaGhiWEJzWlM1amIyMHhIREFhQmdOVkJBTVRFMk5oCkxtOXlaekV1WlhoaGJYQnNaUzVqYjIwd0hoY05Nak13TlRFNU1URTFOVEF3V2hjTk1qUXdOVEU0TVRJd01EQXcKV2pCZE1Rc3dDUVlEVlFRR0V3SlZVekVYTUJVR0ExVUVDQk1PVG05eWRHZ2dRMkZ5YjJ4cGJtRXhGREFTQmdOVgpCQW9UQzBoNWNHVnliR1ZrWjJWeU1ROHdEUVlEVlFRTEV3WmpiR2xsYm5ReERqQU1CZ05WQkFNVEJYVnpaWEl4Ck1Ga3dFd1lIS29aSXpqMENBUVlJS29aSXpqMERBUWNEUWdBRUpNQ1N3RmQ4UlFtOWxBM3JmYlFhM01VVDZPN2IKcU1CU1lzQ09LcEpNczZJUk15T0RCUjRYemhjRkpKeWo0Mkg5U1pVZHllc1ZhZXY2azRLWk80Z0tGcU9CM2pDQgoyekFPQmdOVkhROEJBZjhFQkFNQ0I0QXdEQVlEVlIwVEFRSC9CQUl3QURBZEJnTlZIUTRFRmdRVTVZcm5OaDkvCnA4UWtmSHd4K2xjU2RVbG93SFl3SHdZRFZSMGpCQmd3Rm9BVTdjS1p2S1BqRktSRktkekU2ZUxxNWE4NHcrY3cKSVFZRFZSMFJCQm93R0lJV1pYaHBiV2x2ZFhNeUxVaFZUVUV0U0RRdFZqUXRNVEJZQmdncUF3UUZCZ2NJQVFSTQpleUpoZEhSeWN5STZleUpvWmk1QlptWnBiR2xoZEdsdmJpSTZJaUlzSW1obUxrVnVjbTlzYkcxbGJuUkpSQ0k2CkluVnpaWEl4SWl3aWFHWXVWSGx3WlNJNkltTnNhV1Z1ZENKOWZUQUtCZ2dxaGtqT1BRUURBZ05JQURCRkFpRUEKbnlrQW1VdnhjMWpyRThOdlRVZzErQ0FYM0o5OXY2RGhJYVFkeDdUV2pwY0NJR0xpbS9jeGVjdGlINDBxaXVzbApCa0hqSXRtYzcyU0xQMC84RVd5RHFkWEYKLS0tLS1FTkQgQ0VSVElGSUNBVEUtLS0tLQo="
+                },
+                "nonce": 5129087065558949000
+              }
+            }
+          },
+          "data": {
+            "transactionActions": [
+              {
+                "proposalActionHeader": {
+                  "creator": {
+                    "mspId": "Org1MSP",
+                    "id": "LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCk1JSUNyakNDQWxTZ0F3SUJBZ0lVVmxFZlJVZmhvdk0vUkpMTk9vblBDK2g4Yk93d0NnWUlLb1pJemowRUF3SXcKY0RFTE1Ba0dBMVVFQmhNQ1ZWTXhGekFWQmdOVkJBZ1REazV2Y25Sb0lFTmhjbTlzYVc1aE1ROHdEUVlEVlFRSApFd1pFZFhKb1lXMHhHVEFYQmdOVkJBb1RFRzl5WnpFdVpYaGhiWEJzWlM1amIyMHhIREFhQmdOVkJBTVRFMk5oCkxtOXlaekV1WlhoaGJYQnNaUzVqYjIwd0hoY05Nak13TlRFNU1URTFOVEF3V2hjTk1qUXdOVEU0TVRJd01EQXcKV2pCZE1Rc3dDUVlEVlFRR0V3SlZVekVYTUJVR0ExVUVDQk1PVG05eWRHZ2dRMkZ5YjJ4cGJtRXhGREFTQmdOVgpCQW9UQzBoNWNHVnliR1ZrWjJWeU1ROHdEUVlEVlFRTEV3WmpiR2xsYm5ReERqQU1CZ05WQkFNVEJYVnpaWEl4Ck1Ga3dFd1lIS29aSXpqMENBUVlJS29aSXpqMERBUWNEUWdBRUpNQ1N3RmQ4UlFtOWxBM3JmYlFhM01VVDZPN2IKcU1CU1lzQ09LcEpNczZJUk15T0RCUjRYemhjRkpKeWo0Mkg5U1pVZHllc1ZhZXY2azRLWk80Z0tGcU9CM2pDQgoyekFPQmdOVkhROEJBZjhFQkFNQ0I0QXdEQVlEVlIwVEFRSC9CQUl3QURBZEJnTlZIUTRFRmdRVTVZcm5OaDkvCnA4UWtmSHd4K2xjU2RVbG93SFl3SHdZRFZSMGpCQmd3Rm9BVTdjS1p2S1BqRktSRktkekU2ZUxxNWE4NHcrY3cKSVFZRFZSMFJCQm93R0lJV1pYaHBiV2x2ZFhNeUxVaFZUVUV0U0RRdFZqUXRNVEJZQmdncUF3UUZCZ2NJQVFSTQpleUpoZEhSeWN5STZleUpvWmk1QlptWnBiR2xoZEdsdmJpSTZJaUlzSW1obUxrVnVjbTlzYkcxbGJuUkpSQ0k2CkluVnpaWEl4SWl3aWFHWXVWSGx3WlNJNkltTnNhV1Z1ZENKOWZUQUtCZ2dxaGtqT1BRUURBZ05JQURCRkFpRUEKbnlrQW1VdnhjMWpyRThOdlRVZzErQ0FYM0o5OXY2RGhJYVFkeDdUV2pwY0NJR0xpbS9jeGVjdGlINDBxaXVzbApCa0hqSXRtYzcyU0xQMC84RVd5RHFkWEYKLS0tLS1FTkQgQ0VSVElGSUNBVEUtLS0tLQo="
+                  },
+                  "nonce": 5129087065558949000
+                },
+                "chaincodeActionPayload": {
+                  "chaincodeEndorsedAction": {
+                    "endorsments": [
+                      {
+                        "endorser": {
+                          "mspId": "Org1MSP",
+                          "id": "LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCk1JSUNxVENDQWxDZ0F3SUJBZ0lVU2Z4bjRzamYvV2JTUHNOajBpd2VuNmFaSmVVd0NnWUlLb1pJemowRUF3SXcKY0RFTE1Ba0dBMVVFQmhNQ1ZWTXhGekFWQmdOVkJBZ1REazV2Y25Sb0lFTmhjbTlzYVc1aE1ROHdEUVlEVlFRSApFd1pFZFhKb1lXMHhHVEFYQmdOVkJBb1RFRzl5WnpFdVpYaGhiWEJzWlM1amIyMHhIREFhQmdOVkJBTVRFMk5oCkxtOXlaekV1WlhoaGJYQnNaUzVqYjIwd0hoY05Nak13TlRFNU1URTFOVEF3V2hjTk1qUXdOVEU0TVRJd01EQXcKV2pCYk1Rc3dDUVlEVlFRR0V3SlZVekVYTUJVR0ExVUVDQk1PVG05eWRHZ2dRMkZ5YjJ4cGJtRXhGREFTQmdOVgpCQW9UQzBoNWNHVnliR1ZrWjJWeU1RMHdDd1lEVlFRTEV3UndaV1Z5TVE0d0RBWURWUVFERXdWd1pXVnlNREJaCk1CTUdCeXFHU000OUFnRUdDQ3FHU000OUF3RUhBMElBQk9vSk1IeXdBK3Yvcm1jSUNOcE5PZC9wTis5WUQ0WTAKTnl3ZU1VWGxZL3AxdktTZkQrSG0vT3c4QWFFYUVlUzdaZGlrN081SHVmVWtJU2QwY2dlajVBdWpnZHd3Z2RrdwpEZ1lEVlIwUEFRSC9CQVFEQWdlQU1Bd0dBMVVkRXdFQi93UUNNQUF3SFFZRFZSME9CQllFRkJLbWpkU3BVMFk4CkgzY0NWNmszV2laaXlWdy9NQjhHQTFVZEl3UVlNQmFBRk8zQ21ieWo0eFNrUlNuY3hPbmk2dVd2T01Qbk1DRUcKQTFVZEVRUWFNQmlDRm1WNGFXMXBiM1Z6TWkxSVZVMUJMVWcwTFZZMExURXdWZ1lJS2dNRUJRWUhDQUVFU25zaQpZWFIwY25NaU9uc2lhR1l1UVdabWFXeHBZWFJwYjI0aU9pSWlMQ0pvWmk1RmJuSnZiR3h0Wlc1MFNVUWlPaUp3ClpXVnlNQ0lzSW1obUxsUjVjR1VpT2lKd1pXVnlJbjE5TUFvR0NDcUdTTTQ5QkFNQ0EwY0FNRVFDSUFadzZ3S2IKK0dUa1RPYXdaeDBpcE1QWFFzWlk2Q2x6Q05LSkx3QzhWWWtDQWlCc1orTzRqSmhoZFhRZ0t1Z1pIeVMvd2NWUgpVM2Y2bGNORmhNVnRYTFJtenc9PQotLS0tLUVORCBDRVJUSUZJQ0FURS0tLS0tCg=="
+                        },
+                        "signature": "3044022031a659ed716f6813dc4490d81f48a05334004bfc184f2e782faaf34e52328aea022052ee8c17152f1e8b53b6550dc78aed2868bf5668f135a09b74b736961bad6b6c"
+                      }
+                    ],
+                    "proposalResponsePayload": {
+                      "proposalHash": "39db62cbed807c51c98099751e72a0a073cbfc668ed985f3ecff459199368a6b",
+                      "extensionChaincodeAction": {
+                        "chaincodeId": {
+                          "name": "events",
+                          "path": "",
+                          "version": "1.0"
+                        },
+                        "chaincodeEvent": {
+                          "chaincodeId": "events",
+                          "txId": "ef74d2f63c8441388f68b2fa0ecf0c5801be419acd226c64b605e81f08588b42",
+                          "eventName": "UpdateAsset",
+                          "payload": "{\"ID\":\"asset1684533038153\",\"Color\":\"blue\",\"Size\":\"10\",\"Owner\":\"Sam\",\"AppraisedValue\":\"200\"}"
+                        },
+                        "chaincodeResponse": {
+                          "status": 200,
+                          "message": ""
+                        },
+                        "chaincodeResults": {
+                          "txRWSet": {
+                            "datamodel": 0,
+                            "nsRWSet": [
+                              {
+                                "namespace": "_lifecycle",
+                                "rwset": {
+                                  "kvReadList": [
+                                    {
+                                      "key": "namespaces/fields/events/Sequence",
+                                      "version": {
+                                        "blockNum": 11,
+                                        "txNum": 0
+                                      }
+                                    }
+                                  ],
+                                  "kvWriteList": [],
+                                  "rangeQueryInfoList": [],
+                                  "kvMetadataWriteList": []
+                                },
+                                "collectionHashedRWSet": []
+                              },
+                              {
+                                "namespace": "events",
+                                "rwset": {
+                                  "kvReadList": [
+                                    {
+                                      "key": "asset1684533038153",
+                                      "version": {
+                                        "blockNum": 12,
+                                        "txNum": 0
+                                      }
+                                    }
+                                  ],
+                                  "kvWriteList": [
+                                    {
+                                      "key": "asset1684533038153",
+                                      "value": {
+                                        "asByte": {
+                                          "0": 123,
+                                          "1": 34,
+                                          "2": 73,
+                                          "3": 68,
+                                          "4": 34,
+                                          "5": 58,
+                                          "6": 34,
+                                          "7": 97,
+                                          "8": 115,
+                                          "9": 115,
+                                          "10": 101,
+                                          "11": 116,
+                                          "12": 49,
+                                          "13": 54,
+                                          "14": 56,
+                                          "15": 52,
+                                          "16": 53,
+                                          "17": 51,
+                                          "18": 51,
+                                          "19": 48,
+                                          "20": 51,
+                                          "21": 56,
+                                          "22": 49,
+                                          "23": 53,
+                                          "24": 51,
+                                          "25": 34,
+                                          "26": 44,
+                                          "27": 34,
+                                          "28": 67,
+                                          "29": 111,
+                                          "30": 108,
+                                          "31": 111,
+                                          "32": 114,
+                                          "33": 34,
+                                          "34": 58,
+                                          "35": 34,
+                                          "36": 98,
+                                          "37": 108,
+                                          "38": 117,
+                                          "39": 101,
+                                          "40": 34,
+                                          "41": 44,
+                                          "42": 34,
+                                          "43": 83,
+                                          "44": 105,
+                                          "45": 122,
+                                          "46": 101,
+                                          "47": 34,
+                                          "48": 58,
+                                          "49": 34,
+                                          "50": 49,
+                                          "51": 48,
+                                          "52": 34,
+                                          "53": 44,
+                                          "54": 34,
+                                          "55": 79,
+                                          "56": 119,
+                                          "57": 110,
+                                          "58": 101,
+                                          "59": 114,
+                                          "60": 34,
+                                          "61": 58,
+                                          "62": 34,
+                                          "63": 83,
+                                          "64": 97,
+                                          "65": 109,
+                                          "66": 34,
+                                          "67": 44,
+                                          "68": 34,
+                                          "69": 65,
+                                          "70": 112,
+                                          "71": 112,
+                                          "72": 114,
+                                          "73": 97,
+                                          "74": 105,
+                                          "75": 115,
+                                          "76": 101,
+                                          "77": 100,
+                                          "78": 86,
+                                          "79": 97,
+                                          "80": 108,
+                                          "81": 117,
+                                          "82": 101,
+                                          "83": 34,
+                                          "84": 58,
+                                          "85": 34,
+                                          "86": 50,
+                                          "87": 48,
+                                          "88": 48,
+                                          "89": 34,
+                                          "90": 125
+                                        },
+                                        "asBase64": "eyJJRCI6ImFzc2V0MTY4NDUzMzAzODE1MyIsIkNvbG9yIjoiYmx1ZSIsIlNpemUiOiIxMCIsIk93bmVyIjoiU2FtIiwiQXBwcmFpc2VkVmFsdWUiOiIyMDAifQ==",
+                                        "asString": "{\"ID\":\"asset1684533038153\",\"Color\":\"blue\",\"Size\":\"10\",\"Owner\":\"Sam\",\"AppraisedValue\":\"200\"}"
+                                      },
+                                      "isDeleted": false
+                                    }
+                                  ],
+                                  "rangeQueryInfoList": [],
+                                  "kvMetadataWriteList": []
+                                },
+                                "collectionHashedRWSet": []
+                              }
+                            ]
+                          },
+                          "txPvtRWSet": {
+                            "datamodel": 0,
+                            "nsPvtRWSet": [
+                              {
+                                "namespace": "_lifecycle",
+                                "collectionPvtRWSet": [
+                                  {
+                                    "collectionName": "\n!namespaces/fields/events/Sequence\u0012\u0002\b\u000b",
+                                    "rwset": {
+                                      "kvReadList": [],
+                                      "kvWriteList": [],
+                                      "rangeQueryInfoList": [],
+                                      "kvMetadataWriteList": []
+                                    }
+                                  }
+                                ]
+                              },
+                              {
+                                "namespace": "events",
+                                "collectionPvtRWSet": [
+                                  {
+                                    "collectionName": "\n\u0012asset1684533038153\u0012\u0002\b\f",
+                                    "rwset": {
+                                      "kvReadList": [],
+                                      "kvWriteList": [],
+                                      "rangeQueryInfoList": [],
+                                      "kvMetadataWriteList": []
+                                    }
+                                  }
+                                ]
+                              }
+                            ]
+                          }
+                        }
+                      }
+                    }
+                  },
+                  "chaincodeProposalPayload": {
+                    "chaincodeInvocationSpecInput": {
+                      "ChaincodeSpec": {
+                        "type": "NODE",
+                        "chaincodeId": {
+                          "name": "events",
+                          "path": "",
+                          "version": ""
+                        },
+                        "input": {
+                          "args": [
+                            "UpdateAsset",
+                            "asset1684533038153",
+                            "blue",
+                            "10",
+                            "Sam",
+                            "200"
+                          ],
+                          "isInit": false
+                        },
+                        "timeout": 0
+                      }
+                    }
+                  }
+                }
+              }
+            ]
+          }
+        }
+      }
+    ]
+  }
+}
