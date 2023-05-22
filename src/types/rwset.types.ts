@@ -8,7 +8,7 @@ type ProcessedKVWriteEntry = {
   isDeleted: boolean;
 };
 
-type ProcessedKVWriteSet = ProcessedKVWriteEntry[];
+// type ProcessedKVWriteSet = ProcessedKVWriteEntry[];
 
 type ProcessedKVReadEntry = {
   key: string;
@@ -84,7 +84,7 @@ export {
   ProcessedKVWriteHashEntry,
   ProcessedMerkleSummary,
   ProcessedRangeQueryInfo,
-  ProcessedKVWriteSet,
+  // ProcessedKVWriteSet,
   ProcessedHashedRWSet,
   ProcessedKVRWSet,
 };

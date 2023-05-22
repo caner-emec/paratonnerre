@@ -2,14 +2,21 @@ import {common, ledger, msp, peer} from '@hyperledger/fabric-protos';
 import {checkUndefined, toHexString} from '../../utils/utils';
 import {
   ChaincodeSpecType,
+  ProcessedChaincodeActionPayload,
+  ProcessedChaincodeProposalPayload,
   ProcessedHeaderTypeEnum,
+  ProcessedPayloadDataForEndorsedTx,
   ProcessedSignatureHeader,
+  ProcessedTxActionsEntry,
 } from '../../types/default.types';
 import {p_DeserializeIdentity} from './parserUtils';
 import {ProcessedEndorsmentEntry} from '../../types/block.types';
 import {parseTxPvtRWSet, parseTxRWSet} from './txrwsetParser';
 
-function p_getPayloadData(payload: common.Payload, txType: number): object {
+function p_getPayloadData(
+  payload: common.Payload,
+  txType: number
+): ProcessedPayloadDataForEndorsedTx | object {
   let result: object = {};
   switch (txType) {
     case common.HeaderType.ENDORSER_TRANSACTION:
@@ -42,105 +49,19 @@ function p_getPayloadData(payload: common.Payload, txType: number): object {
   return result;
 }
 
-function p_getPayloadDataForEndorsedTx(payload: common.Payload): object {
-  const actions: object[] = [];
+function p_getPayloadDataForEndorsedTx(
+  payload: common.Payload
+): ProcessedPayloadDataForEndorsedTx {
   const tx = peer.Transaction.deserializeBinary(payload.getData_asU8());
-  console.log('i m here: p_getPayloadDataForEndorsedTx');
   return {
     transactionActions: p_getTxActions(tx),
   };
-
-  /*
-  tx.getActionsList().forEach(action => {
-    // skip header for now..
-
-    // continue with chaincode action payload
-    const chaincodeActionPayload =
-      peer.ChaincodeActionPayload.deserializeBinary(action.getPayload_asU8());
-
-    // get chaincode proposal payload
-    const ccProposalPayload = p_getChaincodeProposalPayload(
-      peer.ChaincodeProposalPayload.deserializeBinary(
-        chaincodeActionPayload.getChaincodeProposalPayload_asU8()
-      )
-    );
-
-    // check chaincode endorsed actions ..
-    let endorsments: ProcessedEndorsmentEntry[] = [];
-    let processedProposalResponsePayload: object = {};
-    if (chaincodeActionPayload.hasAction()) {
-      const chaincodeEndorsedAction = checkUndefined(
-        chaincodeActionPayload.getAction(),
-        'chaincode endorsed actions are undefined!'
-      );
-
-      // Get endorsments
-      endorsments = p_getEndorsments(chaincodeEndorsedAction, 'Base64');
-
-      // Get proposal response payload
-      const proposalResponsePayload =
-        peer.ProposalResponsePayload.deserializeBinary(
-          chaincodeEndorsedAction.getProposalResponsePayload_asU8()
-        );
-
-      processedProposalResponsePayload = {
-        proposalHash: toHexString(
-          proposalResponsePayload.getProposalHash_asU8()
-        ),
-        proposalExtension: p_getChaincodeAction(
-          peer.ChaincodeAction.deserializeBinary(
-            proposalResponsePayload.getExtension_asU8()
-          )
-        ),
-      };
-    }
-
-    // construct stg.
-    actions.push({
-      payload: {
-        endorsments: endorsments,
-        proposalResponsePayload: processedProposalResponsePayload,
-      },
-    });
-  });
-
-  // return template ..
-  return {
-    header: {},
-    txActions: [
-      {
-        header: {},
-        chaincodeActionPayload: {
-          chaincodeEndorsedAction: {
-            endorsments: [
-              {
-                endorser: {
-                  mspId: '',
-                  id: '',
-                },
-                signature: '',
-              },
-            ],
-            proposalResponsePayload: {
-              proposalHash: '',
-              proposalExtension: {}, //peer.ChaincodeAction
-            },
-          },
-          chaincodeProposalPayload: {}, // TO DO !!
-        },
-      },
-    ],
-  };
-
-  */
-
-  /* return {
-    actions: actions,
-  }; */
 }
 
-function p_getTxActions(transaction: peer.Transaction): object[] {
-  const result: object[] = [];
+function p_getTxActions(
+  transaction: peer.Transaction
+): ProcessedTxActionsEntry[] {
+  const result: ProcessedTxActionsEntry[] = [];
   transaction.getActionsList().forEach(txAction => {
     //
 
@@ -163,7 +84,7 @@ function p_getTxActions(transaction: peer.Transaction): object[] {
 
 function p_getChaincodeActionPayload(
   ccActionPayload: peer.ChaincodeActionPayload
-): object {
+): ProcessedChaincodeActionPayload {
   //
 
   return {
@@ -180,7 +101,7 @@ function p_getChaincodeActionPayload(
 
 function p_getChaincodeProposalPayload(
   chaincodePropasalPayload: peer.ChaincodeProposalPayload
-): object {
+): ProcessedChaincodeProposalPayload {
   const chaincodeInput = peer.ChaincodeInvocationSpec.deserializeBinary(
     chaincodePropasalPayload.getInput_asU8()
   );
@@ -249,7 +170,6 @@ function p_getProposalResponsePayload(
   };
 }
 
-// TODO
 function p_getChaincodeAction(ccAction: peer.ChaincodeAction): object {
   const ccEvent = peer.ChaincodeEvent.deserializeBinary(
     ccAction.getEvents_asU8()

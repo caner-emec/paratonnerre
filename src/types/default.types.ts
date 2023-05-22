@@ -1,3 +1,4 @@
+// ??
 type Identity = {
   credentials: string; // user certificate --> cert.pem
   mspId: string;
@@ -30,7 +31,8 @@ type ProcessedSignatureHeader = {
   nonce: Number;
 };
 
-type ProcessedChaincodeEventInfo = {
+// ??
+/*type ProcessedChaincodeEventInfo = {
   eventName: string;
   eventPayload: string;
   eventTxId: string;
@@ -40,6 +42,26 @@ type ProcessedChaincodeInfo = {
   chaincodeName: string | undefined;
   chaincodePath: string | undefined;
   chaincodeVersion: string | undefined;
+};*/
+
+type ProcessedPayloadDataForEndorsedTx = {
+  transactionActions: ProcessedTxActionsEntry[];
+};
+
+type ProcessedTxActionsEntry = {
+  proposalActionHeader: ProcessedSignatureHeader;
+  chaincodeActionPayload: ProcessedChaincodeActionPayload;
+};
+
+// TODO!!
+type ProcessedChaincodeActionPayload = {
+  chaincodeEndorsedAction: object; // p_getChaincodeEndorsedAction
+  chaincodeProposalPayload: ProcessedChaincodeProposalPayload;
+};
+
+// TODO!!
+type ProcessedChaincodeProposalPayload = {
+  chaincodeInvocationSpecInput: object; //p_getChaincodeInvocationSpec(chaincodeInput),
 };
 
 enum ProcessedHeaderTypeEnum {
@@ -68,7 +90,11 @@ export {
   ProcessedBlockMetadataSignature,
   ProcessedHeaderTypeEnum,
   ProcessedId,
-  ProcessedChaincodeEventInfo,
-  ProcessedChaincodeInfo,
+  // ProcessedChaincodeEventInfo,
+  // ProcessedChaincodeInfo,
   ChaincodeSpecType,
+  ProcessedPayloadDataForEndorsedTx,
+  ProcessedTxActionsEntry,
+  ProcessedChaincodeActionPayload,
+  ProcessedChaincodeProposalPayload,
 };

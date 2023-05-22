@@ -1,17 +1,4 @@
-import {
-  ProcessedKVMetadataEntry,
-  ProcessedKVMetadataWriteEntry,
-  ProcessedKVMetadataWriteHashEntry,
-  ProcessedKVReadEntry,
-  ProcessedKVReadHashEntry,
-  ProcessedKVWriteEntry,
-  ProcessedKVWriteHashEntry,
-  ProcessedMerkleSummary,
-  ProcessedRangeQueryInfo,
-  ProcessedKVWriteSet,
-  ProcessedHashedRWSet,
-  ProcessedKVRWSet,
-} from './rwset.types';
+import {ProcessedHashedRWSet, ProcessedKVRWSet} from './rwset.types';
 
 type ProcessedCollectionHashedRWSetEntry = {
   collectionName: string;
