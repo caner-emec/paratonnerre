@@ -1,3 +1,6 @@
+import {ProcessedEndorsmentEntry} from './block.types';
+import {ProcessedTxPvtRWSet, ProcessedTxRWSet} from './txrwset.types';
+
 // ??
 type Identity = {
   credentials: string; // user certificate --> cert.pem
@@ -31,19 +34,6 @@ type ProcessedSignatureHeader = {
   nonce: Number;
 };
 
-// ??
-/*type ProcessedChaincodeEventInfo = {
-  eventName: string;
-  eventPayload: string;
-  eventTxId: string;
-};
-
-type ProcessedChaincodeInfo = {
-  chaincodeName: string | undefined;
-  chaincodePath: string | undefined;
-  chaincodeVersion: string | undefined;
-};*/
-
 type ProcessedPayloadDataForEndorsedTx = {
   transactionActions: ProcessedTxActionsEntry[];
 };
@@ -53,15 +43,67 @@ type ProcessedTxActionsEntry = {
   chaincodeActionPayload: ProcessedChaincodeActionPayload;
 };
 
-// TODO!!
 type ProcessedChaincodeActionPayload = {
-  chaincodeEndorsedAction: object; // p_getChaincodeEndorsedAction
+  chaincodeEndorsedAction: ProcessedChaincodeEndorsedAction;
   chaincodeProposalPayload: ProcessedChaincodeProposalPayload;
 };
 
-// TODO!!
 type ProcessedChaincodeProposalPayload = {
-  chaincodeInvocationSpecInput: object; //p_getChaincodeInvocationSpec(chaincodeInput),
+  chaincodeInvocationSpecInput: ProcessedChaincodeInvocationSpec;
+};
+
+type ProcessedChaincodeInvocationSpec = {
+  ChaincodeSpec: {
+    type: string;
+    chaincodeId: ProcessedChaincodeId;
+    input: ProcessedChaincodeInput;
+    timeout: number;
+  };
+};
+
+type ProcessedChaincodeInput = {
+  args: string[];
+  isInit: boolean;
+};
+
+type ProcessedChaincodeId = {
+  name: string;
+  path: string;
+  version: string;
+};
+
+type ProcessedChaincodeEndorsedAction = {
+  endorsments: ProcessedEndorsmentEntry[];
+  proposalResponsePayload: ProcessedProposalResponsePayload;
+};
+
+type ProcessedProposalResponsePayload = {
+  proposalHash: string;
+  extensionChaincodeAction: ProcessedChaincodeAction;
+};
+
+type ProcessedChaincodeAction = {
+  chaincodeId: ProcessedChaincodeId;
+  chaincodeEvent: ProcessedChaincodeEvent;
+  chaincodeResponse: ProcessedChaincodeResponse;
+  chaincodeResults: ProcessedResultsRWs;
+};
+
+type ProcessedChaincodeEvent = {
+  chaincodeId: string;
+  txId: string;
+  eventName: string;
+  payload: string;
+};
+
+type ProcessedChaincodeResponse = {
+  status: number | undefined;
+  message: string;
+};
+
+type ProcessedResultsRWs = {
+  txRWSet: ProcessedTxRWSet;
+  txPvtRWSet: ProcessedTxPvtRWSet;
 };
 
 enum ProcessedHeaderTypeEnum {
@@ -90,11 +132,18 @@ export {
   ProcessedBlockMetadataSignature,
   ProcessedHeaderTypeEnum,
   ProcessedId,
-  // ProcessedChaincodeEventInfo,
-  // ProcessedChaincodeInfo,
   ChaincodeSpecType,
   ProcessedPayloadDataForEndorsedTx,
   ProcessedTxActionsEntry,
   ProcessedChaincodeActionPayload,
   ProcessedChaincodeProposalPayload,
+  ProcessedChaincodeInvocationSpec,
+  ProcessedChaincodeInput,
+  ProcessedChaincodeId,
+  ProcessedChaincodeEndorsedAction,
+  ProcessedProposalResponsePayload,
+  ProcessedChaincodeEvent,
+  ProcessedChaincodeResponse,
+  ProcessedResultsRWs,
+  ProcessedChaincodeAction,
 };

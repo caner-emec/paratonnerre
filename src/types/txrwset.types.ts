@@ -27,10 +27,16 @@ type ProcessedNsPvtRWEntry = {
   collectionPvtRWSet: ProcessedCollectionPvtRWSetEntry[];
 };
 
+type ProcessedTxPvtRWSet = {
+  datamodel: number;
+  nsPvtRWSet: ProcessedNsPvtRWEntry[];
+};
+
 export {
   ProcessedCollectionHashedRWSetEntry,
   ProcessedNsRWEntry,
   ProcessedTxRWSet,
   ProcessedCollectionPvtRWSetEntry,
   ProcessedNsPvtRWEntry,
+  ProcessedTxPvtRWSet,
 };

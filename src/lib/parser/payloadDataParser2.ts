@@ -3,11 +3,20 @@ import {checkUndefined, toHexString} from '../../utils/utils';
 import {
   ChaincodeSpecType,
   ProcessedChaincodeActionPayload,
+  ProcessedChaincodeEndorsedAction,
+  ProcessedChaincodeInput,
+  ProcessedChaincodeInvocationSpec,
   ProcessedChaincodeProposalPayload,
   ProcessedHeaderTypeEnum,
   ProcessedPayloadDataForEndorsedTx,
+  ProcessedProposalResponsePayload,
   ProcessedSignatureHeader,
   ProcessedTxActionsEntry,
+  ProcessedChaincodeId,
+  ProcessedChaincodeEvent,
+  ProcessedChaincodeResponse,
+  ProcessedResultsRWs,
+  ProcessedChaincodeAction,
 } from '../../types/default.types';
 import {p_DeserializeIdentity} from './parserUtils';
 import {ProcessedEndorsmentEntry} from '../../types/block.types';
@@ -113,25 +122,32 @@ function p_getChaincodeProposalPayload(
 
 function p_getChaincodeInvocationSpec(
   ccInvokeSpec: peer.ChaincodeInvocationSpec
-): object {
+): ProcessedChaincodeInvocationSpec {
   //
+
+  const chaincodeInvokeSpec = checkUndefined(
+    ccInvokeSpec.getChaincodeSpec(),
+    'Chaincode spec not defined!'
+  );
+
+  const chaincodeInput = checkUndefined(
+    chaincodeInvokeSpec.getInput(),
+    'CC input not defined!'
+  );
+
   return {
     ChaincodeSpec: {
-      type: ChaincodeSpecType[ccInvokeSpec.getChaincodeSpec()?.getType() ?? 0],
-      chaincodeId: p_getChaincodeId(
-        ccInvokeSpec.getChaincodeSpec()?.getChaincodeId()
-      ),
-      input: p_getChaincodeInput(ccInvokeSpec.getChaincodeSpec()?.getInput()),
-      timeout: ccInvokeSpec.getChaincodeSpec()?.getTimeout(),
+      type: ChaincodeSpecType[chaincodeInvokeSpec.getType()],
+      chaincodeId: p_getChaincodeId(chaincodeInvokeSpec.getChaincodeId()),
+      input: p_getChaincodeInput(chaincodeInput),
+      timeout: chaincodeInvokeSpec.getTimeout(),
     },
   };
 }
 
-function p_getChaincodeInput(ccInput: peer.ChaincodeInput | undefined): object {
-  if (ccInput === undefined) {
-    return {};
-  }
-
+function p_getChaincodeInput(
+  ccInput: peer.ChaincodeInput
+): ProcessedChaincodeInput {
   return {
     args: ccInput.getArgsList_asU8().map(byte => String.fromCharCode(...byte)),
     isInit: ccInput.getIsInit(),
@@ -140,7 +156,7 @@ function p_getChaincodeInput(ccInput: peer.ChaincodeInput | undefined): object {
 
 function p_getChaincodeEndorsedAction(
   ccEndorsedAction: peer.ChaincodeEndorsedAction
-): object {
+): ProcessedChaincodeEndorsedAction {
   //
   const proposalResponsePayload =
     peer.ProposalResponsePayload.deserializeBinary(
@@ -157,7 +173,7 @@ function p_getChaincodeEndorsedAction(
 
 function p_getProposalResponsePayload(
   proposalResponsePayload: peer.ProposalResponsePayload
-): object {
+): ProcessedProposalResponsePayload {
   //
 
   const chaincodeAction = peer.ChaincodeAction.deserializeBinary(
@@ -170,7 +186,9 @@ function p_getProposalResponsePayload(
   };
 }
 
-function p_getChaincodeAction(ccAction: peer.ChaincodeAction): object {
+function p_getChaincodeAction(
+  ccAction: peer.ChaincodeAction
+): ProcessedChaincodeAction {
   const ccEvent = peer.ChaincodeEvent.deserializeBinary(
     ccAction.getEvents_asU8()
   );
@@ -183,7 +201,7 @@ function p_getChaincodeAction(ccAction: peer.ChaincodeAction): object {
   };
 }
 
-function p_getResultsRWs(results: Uint8Array): object {
+function p_getResultsRWs(results: Uint8Array): ProcessedResultsRWs {
   return {
     txRWSet: parseTxRWSet(
       ledger.rwset.TxReadWriteSet.deserializeBinary(results)
@@ -194,17 +212,19 @@ function p_getResultsRWs(results: Uint8Array): object {
   };
 }
 
-function p_getChaincodeResponse(response: peer.Response | undefined): object {
+function p_getChaincodeResponse(
+  response: peer.Response | undefined
+): ProcessedChaincodeResponse {
   //
-  // const payload: Uint8Array = response?.getPayload_asU8() ?? new Uint8Array();
   return {
     status: response?.getStatus(),
-    message: response?.getMessage(),
-    // payload: String.fromCharCode(...payload),
+    message: response?.getMessage() ?? '',
   };
 }
 
-function p_getChaincodeEvent(ccEvent: peer.ChaincodeEvent): object {
+function p_getChaincodeEvent(
+  ccEvent: peer.ChaincodeEvent
+): ProcessedChaincodeEvent {
   //
   return {
     chaincodeId: ccEvent.getChaincodeId(),
@@ -214,11 +234,13 @@ function p_getChaincodeEvent(ccEvent: peer.ChaincodeEvent): object {
   };
 }
 
-function p_getChaincodeId(ccId: peer.ChaincodeID | undefined): object {
+function p_getChaincodeId(
+  ccId: peer.ChaincodeID | undefined
+): ProcessedChaincodeId {
   return {
-    name: ccId?.getName(),
-    path: ccId?.getPath(),
-    version: ccId?.getVersion(),
+    name: ccId?.getName() ?? '',
+    path: ccId?.getPath() ?? '',
+    version: ccId?.getVersion() ?? '',
   };
 }
 
