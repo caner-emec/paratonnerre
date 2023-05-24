@@ -1,4 +1,3 @@
-//
 import * as grpc from '@grpc/grpc-js';
 import {
   ConnectOptions,
@@ -7,22 +6,10 @@ import {
   checkpointers,
   CloseableAsyncIterable,
 } from '@hyperledger/fabric-gateway';
-import {common, msp} from '@hyperledger/fabric-protos';
-import {
-  Block,
-  BlockData,
-  BlockHeader,
-} from '@hyperledger/fabric-protos/lib/common';
+import {Block} from '@hyperledger/fabric-protos/lib/common';
 import {channelName} from './configs/default.configs';
 import {newGrpcConnection, newConnectOptions} from './lib/connection';
-import {checkUndefined} from './utils/utils';
-import {
-  p_getBlockHeader,
-  p_getBlockMetadata,
-  p_getPayloadHeader,
-  p_getPayloadData,
-  p_constructBlock,
-} from './lib/parser/blockParser';
+import {p_constructBlock} from './lib/parser/blockParser';
 
 //
 let client: grpc.Client | undefined;
@@ -34,9 +21,6 @@ async function main(): Promise<void> {
   client = await newGrpcConnection();
   grpcConnectionOptions = await newConnectOptions(client);
   gateway = connect(grpcConnectionOptions);
-
-  console.log(gateway);
-  console.log(client);
 
   const network = gateway.getNetwork(channelName);
   const checkpointer = await checkpointers.file('checkpoint.json');
@@ -60,34 +44,9 @@ async function main(): Promise<void> {
     console.log(
       '\n\n*******************************************************\n\n'
     );
-    /*
-    const blockData = checkUndefined(
-      blockProto.getData(),
-      'Block not contain any data!'
-    );
 
-    const blockDataDeserialized = blockData
-      .getDataList_asU8()
-      .map(dataBytes => common.Envelope.deserializeBinary(dataBytes));
-
-    const blockPayloads: object[] = [];
-    blockDataDeserialized.forEach(bData => {
-      const payload = common.Payload.deserializeBinary(bData.getPayload_asU8());
-
-      blockPayloads.push({
-        payloadHeader: p_getPayloadHeader(payload),
-        payloadData: p_getPayloadData(payload),
-      });
-    });*/
     const total = p_constructBlock(blockProto);
 
-    /*const total = {
-      block: {
-        metadata: p_getBlockMetadata(blockProto, 'Base64'),
-        header: p_getBlockHeader(blockProto, 'hexString'),
-        data: blockPayloads,
-      },
-    };*/
     console.log(JSON.stringify(total, null, 2));
 
     // console.log(blockProto.getData()?.getDataList_asB64());

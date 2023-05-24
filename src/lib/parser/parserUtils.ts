@@ -1,5 +1,5 @@
-import {common, ledger, msp, peer} from '@hyperledger/fabric-protos';
-import {checkUndefined, toHexString} from '../../utils/utils';
+import {msp} from '@hyperledger/fabric-protos';
+import {toHexString} from '../../utils/utils';
 import {ProcessedId} from '../../types/default.types';
 
 function p_DeserializeIdentity(

@@ -1,17 +1,4 @@
-import {
-  ProcessedKVMetadataEntry,
-  ProcessedKVMetadataWriteEntry,
-  ProcessedKVMetadataWriteHashEntry,
-  ProcessedKVReadEntry,
-  ProcessedKVReadHashEntry,
-  ProcessedKVWriteEntry,
-  ProcessedKVWriteHashEntry,
-  ProcessedMerkleSummary,
-  ProcessedRangeQueryInfo,
-  ProcessedKVWriteSet,
-  ProcessedHashedRWSet,
-  ProcessedKVRWSet,
-} from './rwset.types';
+import {ProcessedHashedRWSet, ProcessedKVRWSet} from './rwset.types';
 
 type ProcessedCollectionHashedRWSetEntry = {
   collectionName: string;
@@ -40,10 +27,16 @@ type ProcessedNsPvtRWEntry = {
   collectionPvtRWSet: ProcessedCollectionPvtRWSetEntry[];
 };
 
+type ProcessedTxPvtRWSet = {
+  datamodel: number;
+  nsPvtRWSet: ProcessedNsPvtRWEntry[];
+};
+
 export {
   ProcessedCollectionHashedRWSetEntry,
   ProcessedNsRWEntry,
   ProcessedTxRWSet,
   ProcessedCollectionPvtRWSetEntry,
   ProcessedNsPvtRWEntry,
+  ProcessedTxPvtRWSet,
 };

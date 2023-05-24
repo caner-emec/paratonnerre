@@ -7,6 +7,7 @@ import {
   ProcessedCollectionPvtRWSetEntry,
   ProcessedNsPvtRWEntry,
   ProcessedNsRWEntry,
+  ProcessedTxPvtRWSet,
   ProcessedTxRWSet,
 } from '../../types/txrwset.types';
 
@@ -114,7 +115,9 @@ function parseNsPvtRWArr(
   return result;
 }
 
-function parseTxPvtRWSet(txpvtrwset: ledger.rwset.TxPvtReadWriteSet): object {
+function parseTxPvtRWSet(
+  txpvtrwset: ledger.rwset.TxPvtReadWriteSet
+): ProcessedTxPvtRWSet {
   return {
     datamodel: txpvtrwset.getDataModel(),
     nsPvtRWSet: parseNsPvtRWArr(txpvtrwset.getNsPvtRwsetList()),

@@ -1,4 +1,4 @@
-import {common, ledger, msp, peer} from '@hyperledger/fabric-protos';
+import {common, msp, peer} from '@hyperledger/fabric-protos';
 import {checkUndefined, toHexString} from '../../utils/utils';
 import {
   ProcessedBlockHeader,
@@ -10,21 +10,26 @@ import {Buffer} from 'node:buffer';
 import {p_DeserializeIdentity} from './parserUtils';
 import {p_getPayloadData} from './payloadDataParser2';
 import {
+  ProcessedBlockConstruction,
+  ProcessedBlockMetadata,
   ProcessedEnvelope,
   ProcessedPayload,
   ProcessedPayloadHeader,
+  TxValidationCode,
 } from '../../types/block.types';
 
-function p_constructBlock(block: common.Block): object {
+function p_constructBlock(block: common.Block): ProcessedBlockConstruction {
   const blockData = checkUndefined(
     block.getData(),
     'Block not contain any data!'
   );
 
+  const validationCodes = getTransactionValidationCodes(block);
+
   const processedEnvelopes = blockData
     .getDataList_asU8()
     .map(dataBytes => common.Envelope.deserializeBinary(dataBytes))
-    .map(envelope => p_getEnvelope(envelope));
+    .map((envelope, i) => p_getEnvelope(envelope, validationCodes[i]));
 
   return {
     block: {
@@ -35,8 +40,12 @@ function p_constructBlock(block: common.Block): object {
   };
 }
 
-function p_getEnvelope(envelope: common.Envelope): ProcessedEnvelope {
+function p_getEnvelope(
+  envelope: common.Envelope,
+  statusCode: number
+): ProcessedEnvelope {
   return {
+    txValidationStatus: TxValidationCode[statusCode],
     signature: toHexString(envelope.getSignature_asU8()),
     payload: p_getPayload(
       common.Payload.deserializeBinary(envelope.getPayload_asU8())
@@ -105,8 +114,6 @@ function p_getPayloadHeader(payload: common.Payload): ProcessedPayloadHeader {
   };
 }
 
-///////////////////////////77
-///////////////////////////7
 function p_getBlockHeader(
   block: common.Block,
   format: 'byteArray' | 'Base64' | 'hexString'
@@ -156,7 +163,7 @@ function p_getBlockMetadataSignature(
 function p_getBlockMetadata(
   block: common.Block,
   format: 'byteArray' | 'Base64' | 'hexString'
-): object {
+): ProcessedBlockMetadata {
   const metadata = checkUndefined(
     block.getMetadata(),
     'Metadata is not defined!'
@@ -175,7 +182,7 @@ function p_getBlockMetadata(
 
   const metadataSignatureList = deserializedMetadata.getSignaturesList();
 
-  const signatureObjArray: object[] = [];
+  const signatureObjArray: ProcessedBlockMetadataSignature[] = [];
   metadataSignatureList.forEach(metadataSig => {
     signatureObjArray.push(p_getBlockMetadataSignature(metadataSig, format));
   });
@@ -190,7 +197,6 @@ function p_getBlockMetadata(
   };
 }
 
-///////////////////////////////////
 function getTransactionValidationCodes(block: common.Block): Uint8Array {
   const metadata = checkUndefined(
     block.getMetadata(),
@@ -199,13 +205,6 @@ function getTransactionValidationCodes(block: common.Block): Uint8Array {
   return metadata.getMetadataList_asU8()[
     common.BlockMetadataIndex.TRANSACTIONS_FILTER
   ];
-}
-
-function getPayloads(block: common.Block): common.Payload[] {
-  return (block.getData()?.getDataList_asU8() ?? [])
-    .map(bytes => common.Envelope.deserializeBinary(bytes))
-    .map(envelope => envelope.getPayload_asU8())
-    .map(bytes => common.Payload.deserializeBinary(bytes));
 }
 
 function getChannelHeader(payload: common.Payload): common.ChannelHeader {
@@ -232,7 +231,6 @@ function getChaincodeActionPayloads(
 export {
   getChaincodeActionPayloads,
   getChannelHeader,
-  getPayloads,
   getSignatureHeader,
   getTransactionValidationCodes,
   p_getBlockHeader,
