@@ -10,29 +10,37 @@ import {Block} from '@hyperledger/fabric-protos/lib/common';
 import {channelName} from './configs/default.configs';
 import {newGrpcConnection, newConnectOptions} from './lib/connection';
 import {p_constructBlock} from './lib/parser/blockParser';
+import {logger} from './lib/logger';
+import * as figlet from 'figlet';
 
-//
 let client: grpc.Client | undefined;
 let grpcConnectionOptions: ConnectOptions | undefined;
 let gateway: Gateway | undefined;
 let blocks: CloseableAsyncIterable<Block> | undefined;
 
+function displayAppName(): void {
+  logger.info('\n\n' + figlet.textSync('Paratonnerre'));
+}
+
 async function main(): Promise<void> {
+  displayAppName();
   client = await newGrpcConnection();
   grpcConnectionOptions = await newConnectOptions(client);
   gateway = connect(grpcConnectionOptions);
 
+  logger.debug('Gateway connection OK, getting Network.');
   const network = gateway.getNetwork(channelName);
   const checkpointer = await checkpointers.file('checkpoint.json');
 
-  console.log(
+  logger.info(
     `Starting event listening from block ${
       checkpointer.getBlockNumber() ?? BigInt(0)
     }`
   );
-  console.log(
+
+  logger.debug(
     'Last processed transaction ID within block:',
-    checkpointer.getTransactionId()
+    checkpointer.getTransactionId() ?? 'There is no processed tx.'
   );
 
   blocks = await network.getBlockEvents({
@@ -41,15 +49,13 @@ async function main(): Promise<void> {
   });
 
   for await (const blockProto of blocks) {
-    console.log(
-      '\n\n*******************************************************\n\n'
+    logger.info(
+      '\n*******************************************************  New block received!  *******************************************************'
     );
 
     const total = p_constructBlock(blockProto);
 
-    console.log(JSON.stringify(total, null, 2));
-
-    // console.log(blockProto.getData()?.getDataList_asB64());
+    //logger.debug(JSON.stringify(total, null, 2));
   }
 
   // Do stg.

@@ -1,17 +1,11 @@
-version: '3.'
-
-networks:
-  test-network:
-    external:
-      name: test-network
+version: '3.0'
 
 services:
   paratonnerre:
     container_name: paratonnerre
     image: caner-emec/paratonnerre:latest
     restart: always
-    ports:
-      - 5000:5000
+    network_mode: 'host'
     volumes:
       - ./:/app
     environment:
@@ -21,8 +15,29 @@ services:
       - MSP_ID=Org1MSP
       - PEER_ENDPOINT=localhost:7051
       - PEER_HOST_ALIAS=peer0.org1.example.com
-      - CRED_USER_CERT_PATH=../src/credentials/cert.pem
-      - CRED_USER_PRIVKEY_PATH=../src/credentials/priv_sk
-      - CRED_PEER_TLS_CERT_PATH=../src/credentials/ca.crt
-    networks:
-      - test-network
+      - CRED_USER_CERT_PATH=./src/credentials/cert.pem
+      - CRED_USER_PRIVKEY_PATH=./src/credentials/priv_sk
+      - CRED_PEER_TLS_CERT_PATH=./src/credentials/ca.crt
+
+  zookeeper:
+    image: confluentinc/cp-zookeeper:7.0.1
+    container_name: zookeeper
+    network_mode: host
+    environment:
+      ZOOKEEPER_CLIENT_PORT: 2181
+      ZOOKEEPER_TICK_TIME: 2000
+
+  broker:
+    image: confluentinc/cp-kafka:7.0.1
+    container_name: broker
+    network_mode: host
+    depends_on:
+      - zookeeper
+    environment:
+      KAFKA_BROKER_ID: 1
+      KAFKA_ZOOKEEPER_CONNECT: 'localhost:2181'
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_INTERNAL:PLAINTEXT
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://localhost:9090,PLAINTEXT_INTERNAL://broker:29092
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
+      KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1

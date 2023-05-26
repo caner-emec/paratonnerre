@@ -8,7 +8,7 @@ import {
 } from '../../types/default.types';
 import {Buffer} from 'node:buffer';
 import {p_DeserializeIdentity} from './parserUtils';
-import {p_getPayloadData} from './payloadDataParser2';
+import {p_getPayloadData} from './payloadDataParser';
 import {
   ProcessedBlockConstruction,
   ProcessedBlockMetadata,
@@ -17,8 +17,10 @@ import {
   ProcessedPayloadHeader,
   TxValidationCode,
 } from '../../types/block.types';
+import {logger} from '../logger';
 
 function p_constructBlock(block: common.Block): ProcessedBlockConstruction {
+  logger.info('Block data contruction started!');
   const blockData = checkUndefined(
     block.getData(),
     'Block not contain any data!'
@@ -44,6 +46,8 @@ function p_getEnvelope(
   envelope: common.Envelope,
   statusCode: number
 ): ProcessedEnvelope {
+  logger.info('Getting envelope..');
+
   return {
     txValidationStatus: TxValidationCode[statusCode],
     signature: toHexString(envelope.getSignature_asU8()),
@@ -54,6 +58,8 @@ function p_getEnvelope(
 }
 
 function p_getPayload(payload: common.Payload): ProcessedPayload {
+  logger.info('Getting payload..');
+
   const typeTx = common.ChannelHeader.deserializeBinary(
     checkUndefined(
       payload.getHeader(),
@@ -70,6 +76,8 @@ function p_getSignatureHeader(
   signatureHeader: common.SignatureHeader,
   format: 'byteArray' | 'Base64' | 'hexString'
 ): ProcessedSignatureHeader {
+  logger.info('Getting signature header..');
+
   const deserializedIdentity = msp.SerializedIdentity.deserializeBinary(
     signatureHeader.getCreator_asU8()
   );
@@ -118,6 +126,8 @@ function p_getBlockHeader(
   block: common.Block,
   format: 'byteArray' | 'Base64' | 'hexString'
 ): ProcessedBlockHeader {
+  logger.info('Getting block header..');
+
   const header = checkUndefined(block.getHeader(), 'Missing block header');
   const prevHash: Uint8Array | string =
     format === 'byteArray'
@@ -144,6 +154,8 @@ function p_getBlockMetadataSignature(
   signature: common.MetadataSignature,
   format: 'byteArray' | 'Base64' | 'hexString'
 ): ProcessedBlockMetadataSignature {
+  logger.info('Getting block metadata signature..');
+
   const sigHeader = common.SignatureHeader.deserializeBinary(
     signature.getSignatureHeader_asU8()
   );
@@ -164,6 +176,8 @@ function p_getBlockMetadata(
   block: common.Block,
   format: 'byteArray' | 'Base64' | 'hexString'
 ): ProcessedBlockMetadata {
+  logger.info('Getting block metadata..');
+
   const metadata = checkUndefined(
     block.getMetadata(),
     'Metadata is not defined!'
@@ -198,6 +212,8 @@ function p_getBlockMetadata(
 }
 
 function getTransactionValidationCodes(block: common.Block): Uint8Array {
+  logger.info('Getting tx validation codes..');
+
   const metadata = checkUndefined(
     block.getMetadata(),
     'Missing block metadata'
@@ -208,11 +224,15 @@ function getTransactionValidationCodes(block: common.Block): Uint8Array {
 }
 
 function getChannelHeader(payload: common.Payload): common.ChannelHeader {
+  logger.info('Getting channel header..');
+
   const header = checkUndefined(payload.getHeader(), 'Missing payload header');
   return common.ChannelHeader.deserializeBinary(header.getChannelHeader_asU8());
 }
 
 function getSignatureHeader(payload: common.Payload): common.SignatureHeader {
+  logger.info('Getting signature header..');
+
   const header = checkUndefined(payload.getHeader(), 'Missing payload header');
   return common.SignatureHeader.deserializeBinary(
     header.getSignatureHeader_asU8()
@@ -222,6 +242,8 @@ function getSignatureHeader(payload: common.Payload): common.SignatureHeader {
 function getChaincodeActionPayloads(
   transaction: peer.Transaction
 ): peer.ChaincodeActionPayload[] {
+  logger.info('Getting chaincode action payloads..');
+
   return transaction
     .getActionsList()
     .map(transactionAction => transactionAction.getPayload_asU8())
