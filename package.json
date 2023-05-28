@@ -26,6 +26,7 @@
     "@hyperledger/fabric-gateway": "^1.2.2",
     "@hyperledger/fabric-protos": "^0.2.0",
     "figlet": "^1.6.0",
+    "kafkajs": "^2.2.4",
     "winston": "^3.8.2"
   },
   "config": {

@@ -1,3 +1,4 @@
+/* eslint-disable node/no-unsupported-features/es-builtins */
 import * as grpc from '@grpc/grpc-js';
 import {
   ConnectOptions,
@@ -7,6 +8,13 @@ import {
   CloseableAsyncIterable,
 } from '@hyperledger/fabric-gateway';
 import {Block} from '@hyperledger/fabric-protos/lib/common';
+import {
+  init as kafkaInit,
+  connect as kafkaConnect,
+  getProducer,
+  disconnect as kafkaDisconnect,
+  send as kafkaSend,
+} from './lib/kafka';
 import {channelName} from './configs/default.configs';
 import {newGrpcConnection, newConnectOptions} from './lib/connection';
 import {p_constructBlock} from './lib/parser/blockParser';
@@ -24,6 +32,11 @@ function displayAppName(): void {
 
 async function main(): Promise<void> {
   displayAppName();
+  // set kafka settings
+  kafkaInit();
+  const producer = getProducer();
+  kafkaConnect(producer);
+
   client = await newGrpcConnection();
   grpcConnectionOptions = await newConnectOptions(client);
   gateway = connect(grpcConnectionOptions);
@@ -56,10 +69,17 @@ async function main(): Promise<void> {
     const total = p_constructBlock(blockProto);
     logger.debug(`Block Number : ${total.block.header.number}`);
 
-    // eslint-disable-next-line node/no-unsupported-features/es-builtins
-    checkpointer.checkpointBlock(BigInt(total.block.header.number));
+    logger.debug(
+      `Block ${total.block.header.number} sending to kafka topic: ${process.env.KAFKA_TOPIC_HLF_BLOCKS} ..`
+    );
 
-    //logger.debug(JSON.stringify(total, null, 2));
+    kafkaSend(
+      producer,
+      process.env.KAFKA_TOPIC_HLF_BLOCKS ?? 'hlf_blocks',
+      JSON.stringify(total)
+    );
+
+    checkpointer.checkpointBlock(BigInt(total.block.header.number));
   }
 
   // Do stg.
@@ -75,6 +95,7 @@ async function main(): Promise<void> {
 main().catch(error => {
   client?.close();
   gateway?.close();
+  kafkaDisconnect(getProducer());
 
   if (error instanceof Error) {
     console.log(error);
