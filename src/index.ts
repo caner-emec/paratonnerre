@@ -54,6 +54,10 @@ async function main(): Promise<void> {
     );
 
     const total = p_constructBlock(blockProto);
+    logger.debug(`Block Number : ${total.block.header.number}`);
+
+    // eslint-disable-next-line node/no-unsupported-features/es-builtins
+    checkpointer.checkpointBlock(BigInt(total.block.header.number));
 
     //logger.debug(JSON.stringify(total, null, 2));
   }
