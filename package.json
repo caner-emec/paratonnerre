@@ -3,7 +3,7 @@
     "@commitlint/cli": "^17.6.3",
     "@commitlint/config-conventional": "^17.6.3",
     "@types/figlet": "^1.5.6",
-    "@types/node": "^20.2.3",
+    "@types/node": "^20.2.5",
     "commitizen": "^4.3.0",
     "cz-conventional-changelog": "^3.3.0",
     "gts": "^3.1.1",
