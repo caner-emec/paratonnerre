@@ -1,14 +1,31 @@
 # **_Paratonnerre_**
 
-Event-catcher for hyperledger fabric.
+<p align="center">
+<img src="./doc/logo.png" alt= “” width="250" height="250">
+</p>
 
-```bash
-npm i typescript --save-dev
-npx tsc --init
-npx tsc -w
-npm i gts --save-dev
-npx gts init
+Event-catcher for Hyperledger Fabric.
 
-https://www.digitalocean.com/community/tutorials/typescript-new-project
+## **Installization**
 
-```
+// TO DO
+
+## **Getting Started**
+
+// TO DO
+
+## **Basic Usage**
+
+// TO DO
+
+## **Authors**
+
+Caner Emeç - caner.emec@gmail.com
+
+## **Licence**
+
+This project is licensed under the GNU General Public License v3.0 - see the [LICENSE](LICENSE) file for details.
+
+## **Acknowledgement**
+
+// TO DO
