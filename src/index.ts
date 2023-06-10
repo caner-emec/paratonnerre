@@ -20,11 +20,15 @@ import {newGrpcConnection, newConnectOptions} from './lib/connection';
 import {p_constructBlock} from './lib/parser/blockParser';
 import {logger} from './lib/logger';
 import * as figlet from 'figlet';
+import {
+  newBlockListener,
+  startBlockListening,
+} from './listeners/listener.manager';
 
 let client: grpc.Client | undefined;
 let grpcConnectionOptions: ConnectOptions | undefined;
 let gateway: Gateway | undefined;
-let blocks: CloseableAsyncIterable<Block> | undefined;
+// let blocks: CloseableAsyncIterable<Block> | undefined;
 
 function displayAppName(): void {
   logger.info('\n\n' + figlet.textSync('Paratonnerre'));
@@ -42,50 +46,16 @@ async function main(): Promise<void> {
   grpcConnectionOptions = await newConnectOptions(client);
   gateway = connect(grpcConnectionOptions);
 
-  logger.debug('Gateway connection OK, getting Network.');
-  const network = gateway.getNetwork(channelName);
-  const checkpointer = await checkpointers.file('checkpoint.json');
-
-  logger.info(
-    `Starting event listening from block ${
-      checkpointer.getBlockNumber() ?? BigInt(0)
-    }`
-  );
-
-  logger.debug(
-    'Last processed transaction ID within block:',
-    checkpointer.getTransactionId() ?? 'There is no processed tx.'
-  );
-
-  blocks = await network.getBlockEvents({
-    checkpoint: checkpointer,
+  await newBlockListener(gateway, channelName, {
+    checkpoint: await checkpointers.file(
+      `${
+        process.env.KAFKA_TOPIC_HLF_BLOCKS_PREFIX ?? 'hlf_blocks'
+      }_${channelName}_checkpoint.json`
+    ),
     startBlock: BigInt(0), // Used only if there is no checkpoint block number
   });
 
-  for await (const blockProto of blocks) {
-    logger.info(
-      '\n*******************************************************  New block received!  *******************************************************'
-    );
-
-    const total = p_constructBlock(blockProto);
-    logger.debug(`Block Number : ${total.block.header.number}`);
-
-    logger.debug(
-      `Block ${total.block.header.number} sending to kafka topic: ${process.env.KAFKA_TOPIC_HLF_BLOCKS_PREFIX} ..`
-    );
-
-    try {
-      kafkaSend(
-        producer,
-        process.env.KAFKA_TOPIC_HLF_BLOCKS_PREFIX ?? 'hlf_blocks',
-        JSON.stringify(total)
-      );
-    } catch (error) {
-      logger.error(error);
-    }
-
-    checkpointer.checkpointBlock(BigInt(total.block.header.number));
-  }
+  const promises = startBlockListening(kafkaSend);
 
   // Do stg.
   // export environment variables..
@@ -95,6 +65,10 @@ async function main(): Promise<void> {
   // start to listen events
   // process events
   // push to kafka
+  logger.debug('Stg after awaited for loop');
+  Promise.all(promises).catch(e => {
+    logger.error(e);
+  });
 }
 
 main().catch(error => {

@@ -3,14 +3,12 @@ import {config} from '../configs/kafka.configs';
 
 let kafka: Kafka;
 
-let producer: Producer;
-
 const init = () => {
   kafka = new Kafka(config);
-  producer = kafka.producer();
 };
 
 const getProducer = () => {
+  const producer: Producer = kafka.producer();
   return producer;
 };
 
