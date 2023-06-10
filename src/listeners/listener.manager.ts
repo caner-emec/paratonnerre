@@ -6,37 +6,15 @@ import {
   Gateway,
 } from '@hyperledger/fabric-gateway';
 import {Block} from '@hyperledger/fabric-protos/lib/common';
-import {
-  BlockAndPrivateData,
-  ChaincodeEvent,
-  FilteredBlock,
-} from '@hyperledger/fabric-protos/lib/peer';
-import {Producer} from 'kafkajs';
 import {connect, getProducer} from '../lib/kafka';
 import {logger} from '../lib/logger';
 import {p_constructBlock} from '../lib/parser/blockParser';
 import {getBlocks} from './block.listener';
-
-type BlockProcessor = (
-  blocks: CloseableAsyncIterable<Block>,
-  callback: KafkaSenderCallback,
-  topic: string
-) => Promise<void>;
-
-type KafkaSenderCallback = (
-  prod: Producer,
-  topic: string,
-  msg: string | Buffer | null
-) => Promise<void>;
-
-type ListenerConfiguration = {
-  iter:
-    | CloseableAsyncIterable<Block>
-    | CloseableAsyncIterable<BlockAndPrivateData>
-    | CloseableAsyncIterable<FilteredBlock>
-    | CloseableAsyncIterable<ChaincodeEvent>;
-  topic: string;
-};
+import {
+  BlockProcessor,
+  ListenerConfiguration,
+  KafkaSenderCallback,
+} from '../types/listener.types';
 
 const blocklisteners: ListenerConfiguration[] = [];
 const promisses: Promise<void>[] = [];
