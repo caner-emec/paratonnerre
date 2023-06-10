@@ -5,19 +5,10 @@ import {
   connect,
   Gateway,
   checkpointers,
-  CloseableAsyncIterable,
 } from '@hyperledger/fabric-gateway';
-import {Block} from '@hyperledger/fabric-protos/lib/common';
-import {
-  init as kafkaInit,
-  connect as kafkaConnect,
-  getProducer,
-  disconnect as kafkaDisconnect,
-  send as kafkaSend,
-} from './lib/kafka';
+import {init as kafkaInit, send as kafkaSend} from './lib/kafka';
 import {channelName} from './configs/default.configs';
 import {newGrpcConnection, newConnectOptions} from './lib/connection';
-import {p_constructBlock} from './lib/parser/blockParser';
 import {logger} from './lib/logger';
 import * as figlet from 'figlet';
 import {
@@ -28,7 +19,6 @@ import {
 let client: grpc.Client | undefined;
 let grpcConnectionOptions: ConnectOptions | undefined;
 let gateway: Gateway | undefined;
-// let blocks: CloseableAsyncIterable<Block> | undefined;
 
 function displayAppName(): void {
   logger.info('\n\n' + figlet.textSync('Paratonnerre'));
@@ -39,8 +29,6 @@ async function main(): Promise<void> {
 
   // set kafka settings
   kafkaInit();
-  const producer = getProducer();
-  kafkaConnect(producer);
 
   client = await newGrpcConnection();
   grpcConnectionOptions = await newConnectOptions(client);
@@ -57,14 +45,6 @@ async function main(): Promise<void> {
 
   const promises = startBlockListening(kafkaSend);
 
-  // Do stg.
-  // export environment variables..
-  // connect peer
-  // set kafka broker, create topics
-  // subscribe to events
-  // start to listen events
-  // process events
-  // push to kafka
   logger.debug('Stg after awaited for loop');
   Promise.all(promises).catch(e => {
     logger.error(e);
@@ -74,7 +54,6 @@ async function main(): Promise<void> {
 main().catch(error => {
   client?.close();
   gateway?.close();
-  kafkaDisconnect(getProducer());
 
   if (error instanceof Error) {
     console.log(error);
