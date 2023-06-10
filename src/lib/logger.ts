@@ -1,5 +1,4 @@
 import {createLogger, transports, format} from 'winston';
-const path = require('path');
 
 function isObject(obj: any): boolean {
   return obj !== undefined && obj !== null && obj.constructor === Object;

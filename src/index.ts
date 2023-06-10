@@ -32,6 +32,7 @@ function displayAppName(): void {
 
 async function main(): Promise<void> {
   displayAppName();
+
   // set kafka settings
   kafkaInit();
   const producer = getProducer();
@@ -70,14 +71,18 @@ async function main(): Promise<void> {
     logger.debug(`Block Number : ${total.block.header.number}`);
 
     logger.debug(
-      `Block ${total.block.header.number} sending to kafka topic: ${process.env.KAFKA_TOPIC_HLF_BLOCKS} ..`
+      `Block ${total.block.header.number} sending to kafka topic: ${process.env.KAFKA_TOPIC_HLF_BLOCKS_PREFIX} ..`
     );
 
-    kafkaSend(
-      producer,
-      process.env.KAFKA_TOPIC_HLF_BLOCKS ?? 'hlf_blocks',
-      JSON.stringify(total)
-    );
+    try {
+      kafkaSend(
+        producer,
+        process.env.KAFKA_TOPIC_HLF_BLOCKS_PREFIX ?? 'hlf_blocks',
+        JSON.stringify(total)
+      );
+    } catch (error) {
+      logger.error(error);
+    }
 
     checkpointer.checkpointBlock(BigInt(total.block.header.number));
   }
