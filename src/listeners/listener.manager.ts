@@ -9,22 +9,39 @@ import {Block} from '@hyperledger/fabric-protos/lib/common';
 import {connect, getProducer} from '../lib/kafka';
 import {logger} from '../lib/logger';
 import {p_constructBlock} from '../lib/parser/blockParser';
-import {getBlocks} from './block.listener';
+import {
+  getBlockAndPrivateData,
+  getBlocks,
+  getFilteredBlocks,
+} from './block.listener';
 import {
   BlockProcessor,
   ListenerConfiguration,
   KafkaSenderCallback,
+  BlockAndPrivateDataProcessor,
+  FilteredBlockProcessor,
 } from '../types/listener.types';
+import {
+  BlockAndPrivateData,
+  FilteredBlock,
+} from '@hyperledger/fabric-protos/lib/peer';
 
-const blocklisteners: ListenerConfiguration[] = [];
+const listeners: ListenerConfiguration[] = [];
 const promisses: Promise<void>[] = [];
+
+/*
+    Block Listener Functions
+    - newBlockListener
+    - startBlockListening
+    - blockProcessor
+*/
 
 const newBlockListener = async (
   gateway: Gateway,
   channelName: string,
   options: EventsOptions
 ) => {
-  blocklisteners.push({
+  listeners.push({
     iter: await getBlocks(gateway, channelName, options),
     topic: `${
       process.env.KAFKA_TOPIC_HLF_BLOCKS_PREFIX ?? 'hlf_blocks'
@@ -38,7 +55,7 @@ const startBlockListening = (
 ): Promise<void>[] => {
   const pFunc = processingFunc === undefined ? blockProcessor : processingFunc;
 
-  blocklisteners.forEach(listenerConfig => {
+  listeners.forEach(listenerConfig => {
     promisses.push(
       pFunc(
         listenerConfig.iter as CloseableAsyncIterable<Block>,
@@ -77,4 +94,158 @@ const blockProcessor: BlockProcessor = async (blocks, callback, topic) => {
   }
 };
 
-export {blockProcessor, newBlockListener, startBlockListening};
+/*
+    Block And Private Data Listener Functions
+    - newBlockAndPrivateDataListener
+    - startBlockAndPrivateDataListening
+    - blockAndPrivateDataProcessor
+*/
+
+const newBlockAndPrivateDataListener = async (
+  gateway: Gateway,
+  channelName: string,
+  options: EventsOptions
+) => {
+  listeners.push({
+    iter: await getBlockAndPrivateData(gateway, channelName, options),
+    topic: `${
+      process.env.KAFKA_TOPIC_HLF_BLOCK_AND_PRIVDATA_PREFIX ??
+      'hlf_blockAndPrivData'
+    }_${channelName}`,
+  });
+};
+
+const startBlockAndPrivateDataListening = (
+  kafkaCallback: KafkaSenderCallback,
+  processingFunc?: BlockAndPrivateDataProcessor
+): Promise<void>[] => {
+  const pFunc =
+    processingFunc === undefined
+      ? blockAndPrivateDataProcessor
+      : processingFunc;
+
+  listeners.forEach(listenerConfig => {
+    promisses.push(
+      pFunc(
+        listenerConfig.iter as CloseableAsyncIterable<BlockAndPrivateData>,
+        kafkaCallback,
+        listenerConfig.topic
+      )
+    );
+  });
+
+  return promisses;
+};
+
+// TODO!
+const blockAndPrivateDataProcessor: BlockAndPrivateDataProcessor = async (
+  blocks,
+  callback,
+  topic
+) => {
+  const checkpointer = await checkpointers.file(`${topic}_checkpoint.json`);
+  const producer = getProducer();
+  await connect(producer);
+
+  /*
+  for await (const blockProto of blocks) {
+    logger.info(
+      '\n*******************************************************  New block received!  *******************************************************'
+    );
+
+    const total = p_constructBlock(blockProto);
+    logger.debug(`Block Number : ${total.block.header.number}`);
+
+    logger.debug(
+      `Block ${total.block.header.number} sending to kafka topic: ${topic} ..`
+    );
+
+    callback(producer, topic, JSON.stringify(total)).catch(e => {
+      logger.error(`Producer has an error. Producer Topic: ${topic}`);
+      logger.error(e);
+    });
+
+    checkpointer.checkpointBlock(BigInt(total.block.header.number));
+  } */
+};
+
+/*
+    Filtered Block Listener Functions
+    - newFilteredBlockListener
+    - startFilteredBlockListening
+    - filteredBlockProcessor
+*/
+
+const newFilteredBlockListener = async (
+  gateway: Gateway,
+  channelName: string,
+  options: EventsOptions
+) => {
+  listeners.push({
+    iter: await getFilteredBlocks(gateway, channelName, options),
+    topic: `${
+      process.env.KAFKA_TOPIC_HLF_FILTERED_BLOCK_PREFIX ?? 'hlf_filteredBlock'
+    }_${channelName}`,
+  });
+};
+
+const startFilteredBlockListening = (
+  kafkaCallback: KafkaSenderCallback,
+  processingFunc?: FilteredBlockProcessor
+): Promise<void>[] => {
+  const pFunc =
+    processingFunc === undefined ? filteredBlockProcessor : processingFunc;
+
+  listeners.forEach(listenerConfig => {
+    promisses.push(
+      pFunc(
+        listenerConfig.iter as CloseableAsyncIterable<FilteredBlock>,
+        kafkaCallback,
+        listenerConfig.topic
+      )
+    );
+  });
+
+  return promisses;
+};
+
+// TODO!
+const filteredBlockProcessor: FilteredBlockProcessor = async (
+  blocks,
+  callback,
+  topic
+) => {
+  const checkpointer = await checkpointers.file(`${topic}_checkpoint.json`);
+  const producer = getProducer();
+  await connect(producer);
+
+  /*
+    for await (const blockProto of blocks) {
+      logger.info(
+        '\n*******************************************************  New block received!  *******************************************************'
+      );
+  
+      const total = p_constructBlock(blockProto);
+      logger.debug(`Block Number : ${total.block.header.number}`);
+  
+      logger.debug(
+        `Block ${total.block.header.number} sending to kafka topic: ${topic} ..`
+      );
+  
+      callback(producer, topic, JSON.stringify(total)).catch(e => {
+        logger.error(`Producer has an error. Producer Topic: ${topic}`);
+        logger.error(e);
+      });
+  
+      checkpointer.checkpointBlock(BigInt(total.block.header.number));
+    } */
+};
+
+export {
+  newBlockListener,
+  startBlockListening,
+  newBlockAndPrivateDataListener,
+  startBlockAndPrivateDataListening,
+  newFilteredBlockListener,
+  startFilteredBlockListening,
+};

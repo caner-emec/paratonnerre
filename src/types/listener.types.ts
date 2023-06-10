@@ -13,6 +13,18 @@ type BlockProcessor = (
   topic: string
 ) => Promise<void>;
 
+type BlockAndPrivateDataProcessor = (
+  blocks: CloseableAsyncIterable<BlockAndPrivateData>,
+  callback: KafkaSenderCallback,
+  topic: string
+) => Promise<void>;
+
+type FilteredBlockProcessor = (
+  blocks: CloseableAsyncIterable<FilteredBlock>,
+  callback: KafkaSenderCallback,
+  topic: string
+) => Promise<void>;
+
 type KafkaSenderCallback = (
   prod: Producer,
   topic: string,
@@ -28,4 +40,10 @@ type ListenerConfiguration = {
   topic: string;
 };
 
-export {KafkaSenderCallback, BlockProcessor, ListenerConfiguration};
+export {
+  KafkaSenderCallback,
+  BlockProcessor,
+  BlockAndPrivateDataProcessor,
+  FilteredBlockProcessor,
+  ListenerConfiguration,
+};
