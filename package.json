@@ -39,5 +39,5 @@
       "path": "./node_modules/cz-conventional-changelog"
     }
   },
-  "version": null
+  "version": "0.1.0-alpha"
 }
