@@ -39,6 +39,8 @@ type KafkaSenderCallback = (
   msg: string | Buffer | null
 ) => Promise<void>;
 
+type KafkaCreateTopicCallback = (topic: string) => Promise<boolean>;
+
 type ListenerConfiguration = {
   iter:
     | CloseableAsyncIterable<Block>
@@ -55,4 +57,5 @@ export {
   FilteredBlockProcessor,
   ChaincodeEventProcessor,
   ListenerConfiguration,
+  KafkaCreateTopicCallback,
 };

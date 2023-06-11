@@ -1,11 +1,15 @@
-import {Kafka, Producer} from 'kafkajs';
+import {Admin, Kafka, Producer} from 'kafkajs';
 import {config} from '../configs/kafka.configs';
 
 let kafka: Kafka;
+let admin: Admin;
 
 const init = () => {
   kafka = new Kafka(config);
+  admin = kafka.admin();
 };
+
+const createTopic = (topic: string) => admin.createTopics({topics: [{topic}]});
 
 const getProducer = () => {
   const producer: Producer = kafka.producer();
@@ -35,4 +39,4 @@ const send = async (
   });
 };
 
-export {init, connect, disconnect, send, getProducer};
+export {init, connect, disconnect, send, getProducer, createTopic};
