@@ -21,9 +21,13 @@ It connects to a node in the Hyperledger fabric network to listen for events. It
 
 ## **Installization**
 
-// TO DO
+Go to the release page and download docker-compose files.
+
+[Release Page - v0.1.0-alpha](https://github.com/caner-emec/paratonnerre/releases/tag/v0.1.0-alpha)
 
 ## **Getting Started**
+
+Before you start, get your Hyperledger Fabric network up and running. Create a channel, upload a chaincode (or multiple chaincodes) and make a few transactions.
 
 ### **Create Folder For Testing**
 
@@ -67,6 +71,24 @@ Download files and put into paratonnerreTest folder.
 [kafka-services compose file](https://github.com/caner-emec/paratonnerre/releases/download/v0.1.0-alpha/kafka-services-docker-compose.yaml)
 
 [paratonnerre compose file](https://github.com/caner-emec/paratonnerre/releases/download/v0.1.0-alpha/paratonnerre-docker-compose.yaml)
+
+### **Configure Environment Variables**
+
+```bash
+- PEER_NAME=peer0.org1.example.com
+- MSP_ID=Org1MSP
+- PEER_ENDPOINT=localhost:7051
+- PEER_HOST_ALIAS=peer0.org1.example.com
+# Listener settings
+- LISTENER_BLOCK_EVENTS_FROM=mychannel # comma seperated channel list
+- LISTENER_CHAINCODE_EVENTS_FROM=mychannel:events,mychannel:basic # comma seperated chaincode list, ex. <channel name>:<chaincode name>
+```
+
+**Change the above variables according to your own network.**
+
+</br>
+
+### **Start Application**
 
 ```bash
 docker-compose -f kafka-services-docker-compose.yaml up -d
