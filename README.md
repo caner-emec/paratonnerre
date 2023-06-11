@@ -64,9 +64,13 @@ You can access the files by following the path below in the test network in the 
 
 Download files and put into paratonnerreTest folder.
 
+[kafka-services compose file](https://github.com/caner-emec/paratonnerre/releases/download/v0.1.0-alpha/kafka-services-docker-compose.yaml)
+
+[paratonnerre compose file](https://github.com/caner-emec/paratonnerre/releases/download/v0.1.0-alpha/paratonnerre-docker-compose.yaml)
+
 ```bash
 docker-compose -f kafka-services-docker-compose.yaml up -d
-docker-compose -f docker-compose.yaml up
+docker-compose -f paratonnerre-docker-compose.yaml up
 ```
 
 ## **Basic Usage**
