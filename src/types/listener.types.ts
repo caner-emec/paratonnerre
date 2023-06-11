@@ -1,8 +1,10 @@
-import {CloseableAsyncIterable} from '@hyperledger/fabric-gateway';
+import {
+  ChaincodeEvent,
+  CloseableAsyncIterable,
+} from '@hyperledger/fabric-gateway';
 import {Block} from '@hyperledger/fabric-protos/lib/common';
 import {
   BlockAndPrivateData,
-  ChaincodeEvent,
   FilteredBlock,
 } from '@hyperledger/fabric-protos/lib/peer';
 import {Producer} from 'kafkajs';
@@ -21,6 +23,12 @@ type BlockAndPrivateDataProcessor = (
 
 type FilteredBlockProcessor = (
   blocks: CloseableAsyncIterable<FilteredBlock>,
+  callback: KafkaSenderCallback,
+  topic: string
+) => Promise<void>;
+
+type ChaincodeEventProcessor = (
+  blocks: CloseableAsyncIterable<ChaincodeEvent>,
   callback: KafkaSenderCallback,
   topic: string
 ) => Promise<void>;
@@ -45,5 +53,6 @@ export {
   BlockProcessor,
   BlockAndPrivateDataProcessor,
   FilteredBlockProcessor,
+  ChaincodeEventProcessor,
   ListenerConfiguration,
 };
