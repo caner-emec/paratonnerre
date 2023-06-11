@@ -4,6 +4,26 @@ import * as path from 'path';
 const channelName = process.env.CHANNEL_NAME ?? 'mychannel';
 const chaincodeName = process.env.CHAINCODE_NAME ?? 'basic';
 
+const channelsForBlockEvent = (
+  process.env.LISTENER_BLOCK_EVENTS_FROM ?? 'mychannel'
+)
+  .split(',')
+  .map(x => x.trim());
+
+const chaincodesForEvents = (
+  process.env.LISTENER_CHAINCODE_EVENTS_FROM ?? 'mychannel:events'
+)
+  .split(',')
+  .map(x => x.trim())
+  .map(x => {
+    return {channel: x.split(':')[0], chaincode: x.split(':')[1]};
+  });
+
+type ChaincodeEventInfo = {
+  channel: string;
+  chaincode: string;
+};
+
 const peerName = process.env.PEER_NAME ?? 'peer0.org1.example.com';
 const mspId = process.env.MSP_ID ?? 'Org1MSP';
 
@@ -26,11 +46,14 @@ const hlfCredsPath: HLFCredentialsPaths = {
 };
 
 export {
-  channelName,
-  chaincodeName,
+  channelName, // TODO!
+  chaincodeName, // TODO!
   peerName,
   mspId,
   hlfCredsPath,
   peerEndpoint,
   peerHostAlias,
+  channelsForBlockEvent,
+  chaincodesForEvents,
+  ChaincodeEventInfo,
 };

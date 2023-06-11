@@ -7,7 +7,11 @@ import {
   checkpointers,
 } from '@hyperledger/fabric-gateway';
 import {init as kafkaInit, send as kafkaSend} from './lib/kafka';
-import {channelName} from './configs/default.configs';
+import {
+  ChaincodeEventInfo,
+  chaincodesForEvents,
+  channelsForBlockEvent,
+} from './configs/default.configs';
 import {newGrpcConnection, newConnectOptions} from './lib/connection';
 import {logger} from './lib/logger';
 import * as figlet from 'figlet';
@@ -26,6 +30,40 @@ function displayAppName(): void {
   logger.info('\n\n' + figlet.textSync('Paratonnerre'));
 }
 
+async function setBlocklisteners(gateway: Gateway, channels: string[]) {
+  for (let index = 0; index < channels.length; index++) {
+    await newBlockListener(gateway, channels[index], {
+      checkpoint: await checkpointers.file(
+        `${process.env.KAFKA_TOPIC_HLF_BLOCKS_PREFIX ?? 'hlf_blocks'}_${
+          channels[index]
+        }_checkpoint.json`
+      ),
+      startBlock: BigInt(0), // Used only if there is no checkpoint block number
+    });
+  }
+}
+
+async function setChaincodeListeners(
+  gateway: Gateway,
+  ccInfos: ChaincodeEventInfo[]
+) {
+  for (let index = 0; index < ccInfos.length; index++) {
+    await newChaincodeEventListener(
+      gateway,
+      ccInfos[index].channel,
+      ccInfos[index].chaincode,
+      {
+        checkpoint: await checkpointers.file(
+          `${process.env.KAFKA_TOPIC_HLF_TRANSACTION_PREFIX ?? 'hlf_txs'}_${
+            ccInfos[index].channel
+          }_${ccInfos[index].chaincode}checkpoint.json`
+        ),
+        startBlock: BigInt(0), // Used only if there is no checkpoint block number
+      }
+    );
+  }
+}
+
 async function main(): Promise<void> {
   displayAppName();
 
@@ -36,30 +74,11 @@ async function main(): Promise<void> {
   grpcConnectionOptions = await newConnectOptions(client);
   gateway = connect(grpcConnectionOptions);
 
-  await newBlockListener(gateway, channelName, {
-    checkpoint: await checkpointers.file(
-      `${
-        process.env.KAFKA_TOPIC_HLF_BLOCKS_PREFIX ?? 'hlf_blocks'
-      }_${channelName}_checkpoint.json`
-    ),
-    startBlock: BigInt(0), // Used only if there is no checkpoint block number
-  });
+  logger.warn({channelsForBlockEvent});
+  logger.warn({chaincodesForEvents});
 
-  await newChaincodeEventListener(
-    gateway,
-    channelName,
-    process.env.CHAINCODE_NAMES ?? 'basic',
-    {
-      checkpoint: await checkpointers.file(
-        `${
-          process.env.KAFKA_TOPIC_HLF_TRANSACTION_PREFIX ?? 'hlf_txs'
-        }_${channelName}_${
-          process.env.CHAINCODE_NAMES ?? 'events'
-        }checkpoint.json`
-      ),
-      startBlock: BigInt(0), // Used only if there is no checkpoint block number
-    }
-  );
+  await setBlocklisteners(gateway, channelsForBlockEvent);
+  await setChaincodeListeners(gateway, chaincodesForEvents);
 
   startBlockListening(kafkaSend);
   const promises = startChaincodeEventListening(kafkaSend);

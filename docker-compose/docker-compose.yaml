@@ -18,6 +18,9 @@ services:
       - CRED_USER_CERT_PATH=./src/credentials/cert.pem
       - CRED_USER_PRIVKEY_PATH=./src/credentials/priv_sk
       - CRED_PEER_TLS_CERT_PATH=./src/credentials/ca.crt
+      # Listener settings
+      - LISTENER_BLOCK_EVENTS_FROM=mychannel # comma seperated channel list
+      - LISTENER_CHAINCODE_EVENTS_FROM=mychannel:events,mychannel:basic # comma seperated chaincode list, ex. <channel name>:<chaincode name>
       # Kafka settings
       - KAFKA_BROKER_ADDRESSES=localhost:29092,localhost:39092 # comma seperated broker addresses
       - KAFKA_TOPIC_HLF_BLOCKS_PREFIX=hlf_blocks
