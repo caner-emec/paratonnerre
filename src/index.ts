@@ -32,6 +32,7 @@ function displayAppName(): void {
 
 async function setBlocklisteners(gateway: Gateway, channels: string[]) {
   for (let index = 0; index < channels.length; index++) {
+    logger.info(`Setting new Block Listener for channel: ${channels[index]}`);
     await newBlockListener(gateway, channels[index], {
       checkpoint: await checkpointers.file(
         `${process.env.KAFKA_TOPIC_HLF_BLOCKS_PREFIX ?? 'hlf_blocks'}_${
@@ -48,6 +49,9 @@ async function setChaincodeListeners(
   ccInfos: ChaincodeEventInfo[]
 ) {
   for (let index = 0; index < ccInfos.length; index++) {
+    logger.info(
+      `Setting new Chaincode Event Listener for chaincode: ${ccInfos[index].chaincode} in channel: ${ccInfos[index].channel}`
+    );
     await newChaincodeEventListener(
       gateway,
       ccInfos[index].channel,
@@ -70,20 +74,22 @@ async function main(): Promise<void> {
   // set kafka settings
   kafkaInit();
 
+  // set grpc connection
   client = await newGrpcConnection();
   grpcConnectionOptions = await newConnectOptions(client);
   gateway = connect(grpcConnectionOptions);
 
-  logger.warn({channelsForBlockEvent});
-  logger.warn({chaincodesForEvents});
+  logger.debug({channelsForBlockEvent});
+  logger.debug({chaincodesForEvents});
 
+  // add listeners
   await setBlocklisteners(gateway, channelsForBlockEvent);
   await setChaincodeListeners(gateway, chaincodesForEvents);
 
+  // start listeners
   startBlockListening(kafkaSend);
   const promises = startChaincodeEventListening(kafkaSend);
 
-  logger.debug('Stg after awaited for loop');
   Promise.all(promises).catch(e => {
     logger.error(`Some error occured: ${e}`);
   });
