@@ -3,11 +3,11 @@ version: '3.0'
 services:
   paratonnerre:
     container_name: paratonnerre
-    image: caner-emec/paratonnerre:latest
+    image: ghcr.io/caner-emec/paratonnerre:0.1.0-alpha
     restart: always
     network_mode: host
     volumes:
-      - ./:/app
+      - ./:/usr/src/app/src/credentials/
     environment:
       - CHANNEL_NAME=mychannel
       - CHAINCODE_NAMES=events # comma seperated list ex. basic,fabcar,assetTransfer

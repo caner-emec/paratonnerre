@@ -1,0 +1,9 @@
+{
+  "chaincodeEvent": {
+    "transactionId": "12b5aa482750d0f0a53daa3b69d6856f1652519f9f66e5fc4ad6d2b3a145705a",
+    "blockNumber": 22,
+    "eventName": "TransferAsset",
+    "chaincodeName": "events",
+    "payload": "{\"ID\":\"asset1686480891540\",\"Color\":\"blue\",\"Size\":\"10\",\"Owner\":\"Mary\",\"AppraisedValue\":\"200\"}"
+  }
+}
