@@ -6,6 +6,19 @@
 
 Event-catcher for Hyperledger Fabric.
 
+It connects to a node in the Hyperledger fabric network to listen for events. It has the following features.
+
+- Listening raw blocks
+- Listening chaincode events.
+- Listen to block events on multiple channel.
+- Listen to chaincode events on multiple chaincodes.
+- Gateway-SDK is used.
+
+**Coming soon:**
+
+- Filtered Block Events
+- Block And Private Data Events
+
 ## **Installization**
 
 // TO DO
