@@ -6,7 +6,7 @@ import {
   Gateway,
   checkpointers,
 } from '@hyperledger/fabric-gateway';
-import {init as kafkaInit, send as kafkaSend} from './lib/kafka';
+import {createTopic, init as kafkaInit, send as kafkaSend} from './lib/kafka';
 import {
   ChaincodeEventInfo,
   chaincodesForEvents,
@@ -21,6 +21,7 @@ import {
   startBlockListening,
   startChaincodeEventListening,
 } from './listeners/listener.manager';
+import {KafkaCreateTopicCallback} from './types/listener.types';
 
 let client: grpc.Client | undefined;
 let grpcConnectionOptions: ConnectOptions | undefined;
@@ -30,9 +31,19 @@ function displayAppName(): void {
   logger.info('\n\n' + figlet.textSync('Paratonnerre'));
 }
 
-async function setBlocklisteners(gateway: Gateway, channels: string[]) {
+async function setBlocklisteners(
+  gateway: Gateway,
+  channels: string[],
+  createTopic: KafkaCreateTopicCallback
+) {
   for (let index = 0; index < channels.length; index++) {
     logger.info(`Setting new Block Listener for channel: ${channels[index]}`);
+    const result = await createTopic(
+      `${process.env.KAFKA_TOPIC_HLF_BLOCKS_PREFIX ?? 'hlf_blocks'}_${
+        channels[index]
+      }`
+    );
+    logger.warn({result});
     await newBlockListener(gateway, channels[index], {
       checkpoint: await checkpointers.file(
         `${process.env.KAFKA_TOPIC_HLF_BLOCKS_PREFIX ?? 'hlf_blocks'}_${
@@ -46,12 +57,20 @@ async function setBlocklisteners(gateway: Gateway, channels: string[]) {
 
 async function setChaincodeListeners(
   gateway: Gateway,
-  ccInfos: ChaincodeEventInfo[]
+  ccInfos: ChaincodeEventInfo[],
+  createTopic: KafkaCreateTopicCallback
 ) {
   for (let index = 0; index < ccInfos.length; index++) {
     logger.info(
       `Setting new Chaincode Event Listener for chaincode: ${ccInfos[index].chaincode} in channel: ${ccInfos[index].channel}`
     );
+    const result = await createTopic(
+      `${process.env.KAFKA_TOPIC_HLF_TRANSACTION_PREFIX ?? 'hlf_txs'}_${
+        ccInfos[index].channel
+      }_${ccInfos[index].chaincode}`
+    );
+    logger.warn({result});
+
     await newChaincodeEventListener(
       gateway,
       ccInfos[index].channel,
@@ -83,8 +102,8 @@ async function main(): Promise<void> {
   logger.debug({chaincodesForEvents});
 
   // add listeners
-  await setBlocklisteners(gateway, channelsForBlockEvent);
-  await setChaincodeListeners(gateway, chaincodesForEvents);
+  await setBlocklisteners(gateway, channelsForBlockEvent, createTopic);
+  await setChaincodeListeners(gateway, chaincodesForEvents, createTopic);
 
   // start listeners
   startBlockListening(kafkaSend);
