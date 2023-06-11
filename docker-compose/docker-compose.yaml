@@ -10,7 +10,7 @@ services:
       - ./:/app
     environment:
       - CHANNEL_NAME=mychannel
-      - CHAINCODE_NAMES=basic # comma seperated list ex. basic,fabcar,assetTransfer
+      - CHAINCODE_NAMES=events # comma seperated list ex. basic,fabcar,assetTransfer
       - PEER_NAME=peer0.org1.example.com
       - MSP_ID=Org1MSP
       - PEER_ENDPOINT=localhost:7051
@@ -21,4 +21,6 @@ services:
       # Kafka settings
       - KAFKA_BROKER_ADDRESSES=localhost:29092,localhost:39092 # comma seperated broker addresses
       - KAFKA_TOPIC_HLF_BLOCKS_PREFIX=hlf_blocks
-      - KAFKA_TOPIC_HLF_TRANSACTION_PREFIX=hlf_txs_
+      - KAFKA_TOPIC_HLF_BLOCK_AND_PRIVDATA_PREFIX=hlf_blockAndPriv
+      - KAFKA_TOPIC_HLF_FILTERED_BLOCK_PREFIX=hlf_filteredBlock
+      - KAFKA_TOPIC_HLF_TRANSACTION_PREFIX=hlf_txs

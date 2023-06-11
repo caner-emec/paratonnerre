@@ -13,7 +13,9 @@ import {logger} from './lib/logger';
 import * as figlet from 'figlet';
 import {
   newBlockListener,
+  newChaincodeEventListener,
   startBlockListening,
+  startChaincodeEventListening,
 } from './listeners/listener.manager';
 
 let client: grpc.Client | undefined;
@@ -43,11 +45,28 @@ async function main(): Promise<void> {
     startBlock: BigInt(0), // Used only if there is no checkpoint block number
   });
 
-  const promises = startBlockListening(kafkaSend);
+  await newChaincodeEventListener(
+    gateway,
+    channelName,
+    process.env.CHAINCODE_NAMES ?? 'basic',
+    {
+      checkpoint: await checkpointers.file(
+        `${
+          process.env.KAFKA_TOPIC_HLF_TRANSACTION_PREFIX ?? 'hlf_txs'
+        }_${channelName}_${
+          process.env.CHAINCODE_NAMES ?? 'events'
+        }checkpoint.json`
+      ),
+      startBlock: BigInt(0), // Used only if there is no checkpoint block number
+    }
+  );
+
+  startBlockListening(kafkaSend);
+  const promises = startChaincodeEventListening(kafkaSend);
 
   logger.debug('Stg after awaited for loop');
   Promise.all(promises).catch(e => {
-    logger.error(e);
+    logger.error(`Some error occured: ${e}`);
   });
 }
 
