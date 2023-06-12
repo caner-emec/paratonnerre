@@ -27,7 +27,7 @@
     "posttest": "npm run lint"
   },
   "dependencies": {
-    "@grpc/grpc-js": "^1.8.14",
+    "@grpc/grpc-js": "^1.8.15",
     "@hyperledger/fabric-gateway": "^1.2.2",
     "@hyperledger/fabric-protos": "^0.2.0",
     "figlet": "^1.6.0",
