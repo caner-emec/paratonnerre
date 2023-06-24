@@ -18,8 +18,10 @@ import * as figlet from 'figlet';
 import {
   newBlockListener,
   newChaincodeEventListener,
+  newFilteredBlockListener,
   startBlockListening,
   startChaincodeEventListening,
+  startFilteredBlockListening,
 } from './listeners/listener.manager';
 import {KafkaCreateTopicCallback} from './types/listener.types';
 
@@ -29,6 +31,33 @@ let gateway: Gateway | undefined;
 
 function displayAppName(): void {
   logger.info('\n\n' + figlet.textSync('Paratonnerre'));
+}
+
+async function setFilteredBlockListeners(
+  gateway: Gateway,
+  channels: string[],
+  createTopic: KafkaCreateTopicCallback
+) {
+  for (let index = 0; index < channels.length; index++) {
+    logger.info(
+      `Setting new Filtered Block Listener for channel: ${channels[index]}`
+    );
+    const result = await createTopic(
+      `${
+        process.env.KAFKA_TOPIC_HLF_FILTERED_BLOCK_PREFIX ?? 'hlf_filteredBlock'
+      }_${channels[index]}`
+    );
+    logger.warn({result});
+    await newFilteredBlockListener(gateway, channels[index], {
+      checkpoint: await checkpointers.file(
+        `${
+          process.env.KAFKA_TOPIC_HLF_FILTERED_BLOCK_PREFIX ??
+          'hlf_filteredBlock'
+        }_${channels[index]}_checkpoint.json`
+      ),
+      startBlock: BigInt(0), // Used only if there is no checkpoint block number
+    });
+  }
 }
 
 async function setBlocklisteners(
@@ -103,10 +132,12 @@ async function main(): Promise<void> {
 
   // add listeners
   await setBlocklisteners(gateway, channelsForBlockEvent, createTopic);
+  await setFilteredBlockListeners(gateway, channelsForBlockEvent, createTopic);
   await setChaincodeListeners(gateway, chaincodesForEvents, createTopic);
 
   // start listeners
   startBlockListening(kafkaSend);
+  startFilteredBlockListening(kafkaSend);
   const promises = startChaincodeEventListening(kafkaSend);
 
   Promise.all(promises).catch(e => {
