@@ -8,7 +8,8 @@ Event-catcher for Hyperledger Fabric.
 
 It connects to a node in the Hyperledger fabric network to listen for events. It has the following features.
 
-- Listening raw blocks
+- Listening raw block events.
+- Listenin filtered block events.
 - Listening chaincode events.
 - Listen to block events on multiple channel.
 - Listen to chaincode events on multiple chaincodes.
@@ -16,7 +17,6 @@ It connects to a node in the Hyperledger fabric network to listen for events. It
 
 **Coming soon:**
 
-- Filtered Block Events
 - Block And Private Data Events
 
 ## **Installization**
@@ -102,6 +102,7 @@ docker-compose -f paratonnerre-docker-compose.yaml up
 Topic names:
 
 - _< KAFKA_TOPIC_HLF_BLOCKS_PREFIX >\_< Channel Name >_
+- _< KAFKA_TOPIC_HLF_FILTERED_BLOCK_PREFIX >\_< Channel Name >_
 - _< KAFKA_TOPIC_HLF_TRANSACTION_PREFIX >\_< Channel Name >\_< Chaincode Name >_
 
 </br>
@@ -116,7 +117,34 @@ docker exec kafka-1 kafka-console-consumer --topic <TOPIC NAME COMES HERE> --fro
 docker exec kafka-1 kafka-console-consumer --topic hlf_txs_mychannel_events --from-beginning --bootstrap-server localhost:9092
 docker exec kafka-1 kafka-console-consumer --topic hlf_txs_mychannel_basic --from-beginning --bootstrap-server localhost:9092
 docker exec kafka-1 kafka-console-consumer --topic hlf_blocks_mychannel --from-beginning --bootstrap-server localhost:9092
+docker exec kafka-1 kafka-console-consumer --topic hlf_filteredBlock_mychannel --from-beginning --bootstrap-server localhost:9092
 ```
+
+**Filtered Block Event Data Example Output**
+```json
+{
+   "channelID":"mychannel",
+   "number":23,
+   "filteredTxs":[
+      {
+         "txId":"12a8d233669d147778cce342e37a0f195fbdcffdd9bc8efe716745c010009f3e",
+         "type":"ENDORSER_TRANSACTION",
+         "validationCode":"VALID",
+         "actions":[
+            {
+               "chaincodeEvent":{
+                  "transactionId":"12a8d233669d147778cce342e37a0f195fbdcffdd9bc8efe716745c010009f3e",
+                  "eventName":"DeleteAsset",
+                  "chaincodeName":"events",
+                  "payload":""
+               }
+            }
+         ]
+      }
+   ]
+}
+```
+
 
 **Chaincode Event Data Example Output:**
 
