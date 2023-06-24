@@ -3,7 +3,7 @@ version: '3.0'
 services:
   paratonnerre:
     container_name: paratonnerre
-    image: ghcr.io/caner-emec/paratonnerre:0.1.0-alpha
+    image: ghcr.io/caner-emec/paratonnerre:0.3.0-alpha
     restart: always
     network_mode: host
     volumes:
