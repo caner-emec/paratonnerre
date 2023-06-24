@@ -124,4 +124,4 @@ function parseTxPvtRWSet(
   };
 }
 
-export {parseTxRWSet, parseTxPvtRWSet};
+export {parseTxRWSet, parseTxPvtRWSet, parseNsPvtRWArr};

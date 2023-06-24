@@ -30,6 +30,7 @@ import {
 import {getChaincodeEvents} from './chaincode.listener';
 import {p_constructChaincodeEvent} from '../lib/parser/chaincodeEventParser';
 import {p_constructFilteredBlock} from '../lib/parser/filteredBlockParser';
+import {p_constructBlockAndPrivData} from '../lib/parser/blockAndPrivateDataParser';
 
 const listeners: ListenerConfiguration[] = [];
 const promisses: Promise<void>[] = [];
@@ -152,6 +153,26 @@ const blockAndPrivateDataProcessor: BlockAndPrivateDataProcessor = async (
   const producer = getProducer();
   await connect(producer);
 
+  for await (const blockProto of blocks) {
+    logger.info(
+      '\n*******************************************************  New block and private data received!  *******************************************************'
+    );
+
+    const total = p_constructBlockAndPrivData(blockProto);
+    logger.debug(`Block Number : ${total.block?.block.header.number}`);
+
+    logger.debug(
+      `Block ${total.block?.block.header.number} sending to kafka topic: ${topic} ..`
+    );
+
+    callback(producer, topic, JSON.stringify(total)).catch(e => {
+      logger.error(`Producer has an error. Producer Topic: ${topic}`);
+      logger.error(e);
+    });
+
+    // checkpointer.checkpointBlock(BigInt(total.block?.block.header.number));
+  }
+
   /*
   for await (const blockProto of blocks) {
     logger.info(
@@ -214,7 +235,6 @@ const startFilteredBlockListening = (
   return promisses;
 };
 
-// TODO!
 const filteredBlockProcessor: FilteredBlockProcessor = async (
   blocks,
   callback,
