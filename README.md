@@ -21,7 +21,7 @@ It connects to a node in the Hyperledger fabric network to listen for events. It
 
 Go to the release page and download docker-compose files.
 
-[Release Page - v0.1.0-alpha](https://github.com/caner-emec/paratonnerre/releases/tag/v0.1.0-alpha)
+[Release Page - v0.3.0-alpha](https://github.com/caner-emec/paratonnerre/releases/tag/v0.3.0-alpha)
 
 ## **Getting Started**
 
