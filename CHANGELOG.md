@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [0.3.0-alpha](https://github.com/caner-emec/paratonnerre/compare/v0.1.0-alpha...v0.3.0-alpha) (2023-06-24)
+
+
+### Features
+
+* feature: Block and private data listener added! ([a10cd7b](https://github.com/caner-emec/paratonnerre/commit/a10cd7bf1de58a0a5810d40e8dea5e54bc0f977e))
+* filtered block event support added! ([77c382d](https://github.com/caner-emec/paratonnerre/commit/77c382d1b90dc5d5a633b0fba8e33797549a8b32))
+
 ## 0.1.0-alpha (2023-06-11)
 
 
