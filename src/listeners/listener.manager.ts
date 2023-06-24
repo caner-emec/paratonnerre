@@ -29,6 +29,7 @@ import {
 } from '@hyperledger/fabric-protos/lib/peer';
 import {getChaincodeEvents} from './chaincode.listener';
 import {p_constructChaincodeEvent} from '../lib/parser/chaincodeEventParser';
+import {p_constructFilteredBlock} from '../lib/parser/filteredBlockParser';
 
 const listeners: ListenerConfiguration[] = [];
 const promisses: Promise<void>[] = [];
@@ -223,26 +224,23 @@ const filteredBlockProcessor: FilteredBlockProcessor = async (
   const producer = getProducer();
   await connect(producer);
 
-  /*
-    for await (const blockProto of blocks) {
-      logger.info(
-        '\n*******************************************************  New block received!  *******************************************************'
-      );
+  for await (const blockProto of blocks) {
+    logger.info(
+      '\n*******************************************************  New filtered block received!  *******************************************************'
+    );
 
-      const total = p_constructBlock(blockProto);
-      logger.debug(`Block Number : ${total.block.header.number}`);
+    const total = p_constructFilteredBlock(blockProto);
+    logger.debug(`Block Number : ${total.number}`);
 
-      logger.debug(
-        `Block ${total.block.header.number} sending to kafka topic: ${topic} ..`
-      );
+    logger.debug(`Block ${total.number} sending to kafka topic: ${topic} ..`);
 
-      callback(producer, topic, JSON.stringify(total)).catch(e => {
-        logger.error(`Producer has an error. Producer Topic: ${topic}`);
-        logger.error(e);
-      });
+    callback(producer, topic, JSON.stringify(total)).catch(e => {
+      logger.error(`Producer has an error. Producer Topic: ${topic}`);
+      logger.error(e);
+    });
 
-      checkpointer.checkpointBlock(BigInt(total.block.header.number));
-    } */
+    checkpointer.checkpointBlock(BigInt(total.number));
+  }
 };
 
 /*
