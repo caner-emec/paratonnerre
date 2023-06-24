@@ -16,9 +16,11 @@ import {newGrpcConnection, newConnectOptions} from './lib/connection';
 import {logger} from './lib/logger';
 import * as figlet from 'figlet';
 import {
+  newBlockAndPrivateDataListener,
   newBlockListener,
   newChaincodeEventListener,
   newFilteredBlockListener,
+  startBlockAndPrivateDataListening,
   startBlockListening,
   startChaincodeEventListening,
   startFilteredBlockListening,
@@ -31,6 +33,34 @@ let gateway: Gateway | undefined;
 
 function displayAppName(): void {
   logger.info('\n\n' + figlet.textSync('Paratonnerre'));
+}
+
+async function setBlockAndPrivateDataListeners(
+  gateway: Gateway,
+  channels: string[],
+  createTopic: KafkaCreateTopicCallback
+) {
+  for (let index = 0; index < channels.length; index++) {
+    logger.info(
+      `Setting new Block And Private Data Listener for channel: ${channels[index]}`
+    );
+    const result = await createTopic(
+      `${
+        process.env.KAFKA_TOPIC_HLF_BLOCK_AND_PRIVDATA_PREFIX ??
+        'hlf_blockAndPrivData'
+      }_${channels[index]}`
+    );
+    logger.warn({result});
+    await newBlockAndPrivateDataListener(gateway, channels[index], {
+      checkpoint: await checkpointers.file(
+        `${
+          process.env.KAFKA_TOPIC_HLF_BLOCK_AND_PRIVDATA_PREFIX ??
+          'hlf_blockAndPrivData'
+        }_${channels[index]}_checkpoint.json`
+      ),
+      startBlock: BigInt(0), // Used only if there is no checkpoint block number
+    });
+  }
 }
 
 async function setFilteredBlockListeners(
@@ -134,10 +164,16 @@ async function main(): Promise<void> {
   await setBlocklisteners(gateway, channelsForBlockEvent, createTopic);
   await setFilteredBlockListeners(gateway, channelsForBlockEvent, createTopic);
   await setChaincodeListeners(gateway, chaincodesForEvents, createTopic);
+  await setBlockAndPrivateDataListeners(
+    gateway,
+    channelsForBlockEvent,
+    createTopic
+  );
 
   // start listeners
   startBlockListening(kafkaSend);
   startFilteredBlockListening(kafkaSend);
+  startBlockAndPrivateDataListening(kafkaSend);
   const promises = startChaincodeEventListening(kafkaSend);
 
   Promise.all(promises).catch(e => {
