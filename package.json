@@ -29,7 +29,7 @@
   "dependencies": {
     "@grpc/grpc-js": "^1.11.1",
     "@hyperledger/fabric-gateway": "^1.5.1",
-    "@hyperledger/fabric-protos": "^0.2.0",
+    "@hyperledger/fabric-protos": "^0.2.2",
     "figlet": "^1.7.0",
     "kafkajs": "^2.2.4",
     "winston": "^3.11.0"
